@@ -1,0 +1,65 @@
+body {
+  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Pacifico', cursive;
+  font-size: 30px;
+  margin: 0;
+  text-align: center;
+  color: #293c4b;
+}
+
+h1 {
+  margin: 0 auto;
+}
+
+.row {
+  height: 16px;
+}
+
+.tile {
+  display: inline-block;
+  border: 1px solid;
+  width: 14px;
+  height: 14px;
+}
+
+.open {
+  background-color: #effffe;
+  border-color: #fff #adddda #adddda #fff;
+}
+
+.wall {
+  background-color: #bbb;
+  border-color: #ddd #666 #666 #ddd;
+}
+
+.snake-head {
+  background: #a33;
+  border-color: #fdd #644 #644 #fdd;
+}
+.snake-body {
+  background: #d88;
+  border-color: #caa #422 #422 #caa;
+}
+
+.snake-dead {
+  background: #753;
+  border-color: #875 #211 #211 #875;
+}
+
+.food {
+  background-image: url('/snake/food.ico');
+  background-size: 14px;
+  border-color: white;
+}
+
+.game {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.scores {
+  display: flex;
+  width: 36rem;
+    justify-content: space-between;
+}
