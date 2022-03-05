@@ -115,6 +115,9 @@ update msg model =
             in
             init newHighscore ()
 
+        Pause ->
+            ( { model | paused = not model.paused }, Cmd.none )
+
         KeyPress direction ->
             let
                 state =
@@ -148,7 +151,10 @@ update msg model =
                     else
                         Cmd.none
             in
-            if isSnakeAlive newSnake map then
+            if model.paused then
+                ( model, Cmd.none )
+
+            else if isSnakeAlive newSnake map then
                 ( { model | snake = newSnake }, newCommand )
 
             else

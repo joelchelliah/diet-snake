@@ -69,7 +69,9 @@ view model =
     case model.state of
         Moving _ ->
             div [ class "game" ]
-                [ h1 [] [ text "🐍 Snake" ]
+                [ h1 [] [ text "🐍 Diet Snake" ]
+                , h5 [] [ text "The backward snake game!" ]
+                , hr [] []
                 , scores
                 , map
                 ]
@@ -97,6 +99,9 @@ keyToMsg string =
 
         "ArrowLeft" ->
             KeyPress Left
+
+        "Enter" ->
+            Pause
 
         _ ->
             Tick

@@ -8,6 +8,7 @@ type alias Model =
     , map : Map
     , score : Int
     , highscore : Int
+    , paused : Bool
     }
 
 
@@ -54,6 +55,7 @@ type Tile
 type Msg
     = StartGame
     | KeyPress Direction
+    | Pause
     | Tick
     | NewFood Position
 
@@ -104,6 +106,7 @@ init highscore () =
       , map = createMap gameWidth gameHeight
       , score = 0
       , highscore = highscore
+      , paused = True
       }
     , Cmd.none
     )
