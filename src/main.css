@@ -1,24 +1,67 @@
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
-  font-size: 1.5rem;
-  margin: 0;
+  font-size: 1rem;
+  margin: 0 auto;
   text-align: center;
   color: #293c4b;
+  width: 40rem;
 }
 
-h1 {
-  margin: 0 auto;
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: solid 1px #ddd;
+  width: 100%;
+  justify-content: center;
 }
 
-h5 {
-  margin: 0 auto;
+.header-icon {
+  font-size: 4rem;
+  margin-right: 1rem;
+}
+
+.header-texts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-texts-title {
+  font-size: 2rem;
+}
+
+.header-texts-subtitle {
+  font-size: 1rem;
   color: #777;
 }
 
-hr {
-  border-top: 1px solid #eee;
+.scores {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+.instructions {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: solid 1px #ddd;
   width: 100%;
 }
+
+.game-over {
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+}
+
+.game-over-text {
+  font-weight: 800;
+  color: #a33;
+  margin-bottom: 1rem;
+}
+
 
 .row {
   height: 16px;
@@ -56,7 +99,7 @@ hr {
 }
 
 .food {
-  background-image: url('/snake/food.ico');
+  background-image: url('/food.ico');
   background-size: 14px;
   border-color: white;
 }
@@ -65,10 +108,4 @@ hr {
   display: flex;
   align-items: center;
   flex-direction: column;
-}
-
-.scores {
-  display: flex;
-  width: 36rem;
-    justify-content: space-between;
 }

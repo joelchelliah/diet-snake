@@ -49,6 +49,17 @@ viewMap { snake, food, map, state } =
     div [ class "map" ] (List.map viewRow map)
 
 
+viewTitle : Html Msg
+viewTitle =
+    div [ class "header" ]
+        [ div [ class "header-icon" ] [ text "🐍" ]
+        , div [ class "header-texts" ]
+            [ div [ class "header-texts-title" ] [ text "Diet Snake" ]
+            , div [ class "header-texts-subtitle" ] [ text "The totally backward snake game!" ]
+            ]
+        ]
+
+
 viewScores : Model -> Html Msg
 viewScores { score, highscore } =
     div [ class "scores" ]
@@ -57,32 +68,44 @@ viewScores { score, highscore } =
         ]
 
 
+viewGameOver : Model -> Html Msg
+viewGameOver { state } =
+    case state of
+        GameOver ->
+            div [ class "game-over" ]
+                [ div [ class "game-over-text" ] [ text "Snake is dead!" ]
+                , a [ href "", onClick StartGame, style "text-decoration" "underline" ] [ text "Try again?" ]
+                ]
+
+        _ ->
+            span [] []
+
+
+viewInstructions : Html Msg
+viewInstructions =
+    div [ class "instructions" ]
+        [ p []
+            [ b [] [ text "Oh no! " ]
+            , text "Mr. Snake is growing too fast."
+            ]
+        , p [] [ text "Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life." ]
+        , p []
+            [ text "⬆️ ➡️ ⬇️ ⬅️"
+            , br [] []
+            , text "Move around using the Arrow keys."
+            ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
-    let
-        scores =
-            viewScores model
-
-        map =
-            viewMap model
-    in
-    case model.state of
-        Moving _ ->
-            div [ class "game" ]
-                [ h1 [] [ text "🐍 Diet Snake" ]
-                , h5 [] [ text "The backward snake game!" ]
-                , hr [] []
-                , scores
-                , map
-                ]
-
-        GameOver ->
-            div [ class "game" ]
-                [ h1 [] [ text "Game Over!" ]
-                , scores
-                , map
-                , h3 [ onClick StartGame, style "text-decoration" "underline" ] [ text "Restart ?" ]
-                ]
+    div [ class "game" ]
+        [ viewTitle
+        , viewScores model
+        , viewMap model
+        , viewGameOver model
+        , viewInstructions
+        ]
 
 
 keyToMsg : String -> Msg
