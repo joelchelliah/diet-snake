@@ -24,6 +24,7 @@ import Utils exposing (..)
 -- TODO: Icon module ???
 -- TODO: Discard gradually disappearing (css?)
 -- TODO: Update score
+-- TODO: modal shadows
 
 
 viewTile : Snake -> Pill -> List Position -> Bool -> Tile -> Html Msg
@@ -85,26 +86,32 @@ viewScores { stats, bestStats } =
         ]
 
 
-viewGameOver : Model -> Html Msg
-viewGameOver { state } =
+viewModal : Model -> Html Msg
+viewModal { state } =
     case state of
-        GameOver ->
-            div [ class "game-over" ]
-                [ div [ class "game-over-title" ] [ text "Snake is dead!" ]
-                , a [ href "", onClick StartGame, style "text-decoration" "underline" ] [ text "Try again?" ]
+        Init ->
+            div [ class "modal" ]
+                [ div [ class "modal-title" ] [ text "New Game" ]
+
+                -- , text "Mr. Snake is growing too fast."
+                -- , p [] [ text "Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life." ]
+                , text "Press "
+                , b [] [ i [] [ text "Enter" ] ]
+                , text " to start the diet!"
                 ]
 
-        _ ->
-            span [] []
-
-
-viewPausedMessage : Model -> Html Msg
-viewPausedMessage { state } =
-    case state of
         Paused ->
-            div [ class "paused" ]
-                [ div [ class "paused-title" ] [ text "Paused" ]
-                , text "Press Enter to resume the game"
+            div [ class "modal" ]
+                [ div [ class "modal-title" ] [ text "Paused" ]
+                , text "Press "
+                , b [] [ i [] [ text "Enter" ] ]
+                , text " to resume the diet"
+                ]
+
+        GameOver ->
+            div [ class "modal" ]
+                [ div [ class "game-over-title" ] [ text "Snake is dead!" ]
+                , a [ href "", onClick StartGame, style "text-decoration" "underline" ] [ text "Try again?" ]
                 ]
 
         _ ->
@@ -155,8 +162,7 @@ view model =
         , viewTitle
         , viewScores model
         , viewMap model
-        , viewPausedMessage model
-        , viewGameOver model
+        , viewModal model
         , viewInstructions
         , viewInfo
         ]

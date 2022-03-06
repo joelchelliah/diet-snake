@@ -45,6 +45,7 @@ type Direction
 type GameState
     = Running
     | Paused
+    | Init
     | GameOver
 
 
@@ -129,7 +130,7 @@ init bestStats () =
     ( { snake = initSnake 5
       , discardedSnake = []
       , pill = Nothing
-      , state = Running
+      , state = Init
       , map = initMap gameWidth gameHeight
       , stats = initStats
       , bestStats = initStats

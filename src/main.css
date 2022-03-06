@@ -47,8 +47,6 @@ body {
 
 .instructions {
   margin: 2rem 0 0.5rem;
-  padding-top: 1rem;
-  border-top: solid 1px #ddd;
   width: 100%;
 }
 
@@ -69,33 +67,26 @@ body {
   border-top: solid 1px #ddd;
 }
 
-.game-over {
-  position: absolute;
-  top: 20rem;
-  background-color: #fff;
-  opacity: 0.8;
-  padding: 1rem 4rem;
-  border: 1px solid #555;
-}
-
 .game-over-title {
   font-weight: 800;
   color: #a33;
   margin-bottom: 1rem;
 }
 
-.paused {
+.modal {
   position: absolute;
   top: 20rem;
   background-color: #fff;
-  opacity: 0.8;
+  opacity: 1;
   padding: 1rem;
   border: 1px solid #555;
+  min-width: 10rem;
+  max-width: 30rem;
 }
 
-.paused-title {
+.modal-title {
   font-weight: 800;
-  color: #33a;
+  color: #55c;
   margin-bottom: 0.5rem;
 }
 

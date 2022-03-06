@@ -81,7 +81,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ snake, state, pill, map, stats, bestStats } as model) =
     let
         isPaused =
-            state == Paused
+            state == Paused || state == Init
     in
     case msg of
         StartGame ->
