@@ -11,7 +11,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-bottom: solid 1px #ddd;
+  border-bottom: solid 1px #DDD;
   width: 100%;
   justify-content: center;
 }
@@ -33,7 +33,8 @@ body {
 
 .header-texts-subtitle {
   font-size: 1rem;
-  color: #777;
+  color: #AAA;
+  font-style: italic;
 }
 
 .scores {

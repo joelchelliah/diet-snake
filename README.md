@@ -1,5 +1,5 @@
 # 🐍 Diet Snake
->The totally backward snake game!
+>*The totally backward snake game!*
 
 
 ## Oh no!
