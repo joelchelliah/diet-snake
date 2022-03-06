@@ -85,8 +85,21 @@ viewGameOver { state } =
     case state of
         GameOver ->
             div [ class "game-over" ]
-                [ div [ class "game-over-text" ] [ text "Snake is dead!" ]
+                [ div [ class "game-over-title" ] [ text "Snake is dead!" ]
                 , a [ href "", onClick StartGame, style "text-decoration" "underline" ] [ text "Try again?" ]
+                ]
+
+        _ ->
+            span [] []
+
+
+viewPausedMessage : Model -> Html Msg
+viewPausedMessage { state } =
+    case state of
+        Paused ->
+            div [ class "paused" ]
+                [ div [ class "paused-title" ] [ text "Paused" ]
+                , text "Press Enter to resume the game"
                 ]
 
         _ ->
@@ -137,6 +150,7 @@ view model =
         , viewTitle
         , viewScores model
         , viewMap model
+        , viewPausedMessage model
         , viewGameOver model
         , viewInstructions
         , viewInfo
@@ -171,7 +185,7 @@ subscriptions model =
         GameOver ->
             Sub.none
 
-        Moving _ ->
+        _ ->
             Sub.batch
                 [ Time.every 80 (\_ -> Tick)
                 , onKeyDown <| Decode.map keyToMsg <| Decode.field "key" Decode.string

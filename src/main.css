@@ -70,16 +70,34 @@ body {
 }
 
 .game-over {
-  margin-top: 1rem;
-  margin-bottom: -1rem;
+  position: absolute;
+  top: 20rem;
+  background-color: #fff;
+  opacity: 0.8;
+  padding: 1rem 4rem;
+  border: 1px solid #555;
 }
 
-.game-over-text {
+.game-over-title {
   font-weight: 800;
   color: #a33;
   margin-bottom: 1rem;
 }
 
+.paused {
+  position: absolute;
+  top: 20rem;
+  background-color: #fff;
+  opacity: 0.8;
+  padding: 1rem;
+  border: 1px solid #555;
+}
+
+.paused-title {
+  font-weight: 800;
+  color: #33a;
+  margin-bottom: 0.5rem;
+}
 
 .row {
   height: 16px;

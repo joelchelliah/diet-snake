@@ -60,20 +60,17 @@ updateSnake snake food state =
                 , isGrowing = isFoodHere food newHead
             }
     in
-    case state of
-        GameOver ->
-            snake
-
-        Moving Up ->
+    case snake.direction of
+        Up ->
             Tuple.mapSecond (\v -> v - 1) head |> updateFields
 
-        Moving Down ->
+        Down ->
             Tuple.mapSecond (\v -> v + 1) head |> updateFields
 
-        Moving Left ->
+        Left ->
             Tuple.mapFirst (\v -> v - 1) head |> updateFields
 
-        Moving Right ->
+        Right ->
             Tuple.mapFirst (\v -> v + 1) head |> updateFields
 
 
@@ -98,8 +95,32 @@ positionGenerator { head, tail } map =
     Random.map lookUpPosition indexGenerator
 
 
+turnSnake : Snake -> Direction -> Snake
+turnSnake snake direction =
+    let
+        currentDirection =
+            snake.direction
+
+        isValid =
+            ((direction == Up || direction == Down) && (currentDirection == Left || currentDirection == Right))
+                || ((direction == Left || direction == Right) && (currentDirection == Up || currentDirection == Down))
+
+        newDirection =
+            if isValid then
+                direction
+
+            else
+                currentDirection
+    in
+    { snake | direction = newDirection }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    let
+        isPaused =
+            model.state == Paused
+    in
     case msg of
         StartGame ->
             let
@@ -116,25 +137,14 @@ update msg model =
             init { bestStats | weightLoss = newWeightLoss } ()
 
         Pause ->
-            ( { model | paused = not model.paused }, Cmd.none )
+            if isPaused then
+                ( { model | state = Running }, Cmd.none )
+
+            else
+                ( { model | state = Paused }, Cmd.none )
 
         KeyPress direction ->
-            let
-                state =
-                    model.state
-
-                isValid =
-                    ((direction == Up || direction == Down) && (state == Moving Left || state == Moving Right))
-                        || ((direction == Left || direction == Right) && (state == Moving Up || state == Moving Down))
-
-                newState =
-                    if isValid then
-                        Moving direction
-
-                    else
-                        state
-            in
-            ( { model | state = newState }, Cmd.none )
+            ( { model | snake = turnSnake model.snake direction }, Cmd.none )
 
         Tick ->
             let
@@ -151,7 +161,7 @@ update msg model =
                     else
                         Cmd.none
             in
-            if model.paused then
+            if isPaused then
                 ( model, Cmd.none )
 
             else if isSnakeAlive newSnake map then

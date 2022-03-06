@@ -8,7 +8,6 @@ type alias Model =
     , map : Map
     , stats : Stats
     , bestStats : Stats
-    , paused : Bool
     }
 
 
@@ -20,6 +19,7 @@ type alias Snake =
     { head : Position
     , tail : List Position
     , isGrowing : Bool
+    , direction : Direction
     }
 
 
@@ -41,7 +41,8 @@ type Direction
 
 
 type GameState
-    = Moving Direction
+    = Running
+    | Paused
     | GameOver
 
 
@@ -82,6 +83,7 @@ createSnake maxLength =
     { head = head
     , tail = createTail 0
     , isGrowing = False
+    , direction = Up
     }
 
 
@@ -115,11 +117,10 @@ init : Stats -> () -> ( Model, Cmd Msg )
 init bestStats () =
     ( { snake = createSnake 5
       , food = Nothing
-      , state = Moving Up
+      , state = Running
       , map = createMap gameWidth gameHeight
       , stats = initStats
       , bestStats = initStats
-      , paused = True
       }
     , Cmd.none
     )
