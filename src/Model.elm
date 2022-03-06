@@ -6,8 +6,8 @@ type alias Model =
     , food : Food
     , state : GameState
     , map : Map
-    , score : Int
-    , highscore : Int
+    , stats : Stats
+    , bestStats : Stats
     , paused : Bool
     }
 
@@ -20,6 +20,12 @@ type alias Snake =
     { head : Position
     , tail : List Position
     , isGrowing : Bool
+    }
+
+
+type alias Stats =
+    { pillsTaken : Int
+    , weightLoss : Int
     }
 
 
@@ -98,14 +104,21 @@ createMap width height =
     List.map (createRow width height) (List.range 1 height)
 
 
-init : Int -> () -> ( Model, Cmd Msg )
-init highscore () =
+initStats : Stats
+initStats =
+    { weightLoss = 0
+    , pillsTaken = 0
+    }
+
+
+init : Stats -> () -> ( Model, Cmd Msg )
+init bestStats () =
     ( { snake = createSnake 5
       , food = Nothing
       , state = Moving Up
       , map = createMap gameWidth gameHeight
-      , score = 0
-      , highscore = highscore
+      , stats = initStats
+      , bestStats = initStats
       , paused = True
       }
     , Cmd.none

@@ -103,17 +103,17 @@ update msg model =
     case msg of
         StartGame ->
             let
-                { score, highscore } =
+                { stats, bestStats } =
                     model
 
-                newHighscore =
-                    if score > highscore then
-                        score
+                newWeightLoss =
+                    if stats.weightLoss > bestStats.weightLoss then
+                        stats.weightLoss
 
                     else
-                        highscore
+                        bestStats.weightLoss
             in
-            init newHighscore ()
+            init { bestStats | weightLoss = newWeightLoss } ()
 
         Pause ->
             ( { model | paused = not model.paused }, Cmd.none )

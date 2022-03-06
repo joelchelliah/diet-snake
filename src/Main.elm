@@ -2,6 +2,14 @@ module Main exposing (..)
 
 import Browser
 import Browser.Events exposing (onKeyDown)
+import FontAwesome.Attributes as Icon
+import FontAwesome.Brands as Icon
+import FontAwesome.Icon as Icon exposing (Icon)
+import FontAwesome.Layering as Icon
+import FontAwesome.Solid as Icon
+import FontAwesome.Styles as Icon
+import FontAwesome.Svg as SvgIcon
+import FontAwesome.Transforms as Icon
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -10,6 +18,10 @@ import Model exposing (..)
 import Time
 import Update exposing (update)
 import Utils exposing (..)
+
+
+
+-- TODO: Icon module ???
 
 
 viewTile : Snake -> Food -> Bool -> Tile -> Html Msg
@@ -61,10 +73,10 @@ viewTitle =
 
 
 viewScores : Model -> Html Msg
-viewScores { score, highscore } =
+viewScores { stats, bestStats } =
     div [ class "scores" ]
-        [ div [] [ text ("Score: " ++ String.fromInt score) ]
-        , div [] [ text ("Highscore: " ++ String.fromInt highscore) ]
+        [ div [] [ text ("Current weight loss: " ++ String.fromInt stats.weightLoss) ]
+        , div [] [ text ("Most weight lost: " ++ String.fromInt bestStats.weightLoss) ]
         ]
 
 
@@ -83,28 +95,51 @@ viewGameOver { state } =
 
 viewInstructions : Html Msg
 viewInstructions =
+    let
+        viewIcon i =
+            i |> Icon.present |> Icon.transform [ Icon.shrink 2 ] |> Icon.styled [ Icon.lg ] |> Icon.view
+
+        icons =
+            List.map viewIcon
+                [ Icon.arrowCircleUp, Icon.arrowCircleRight, Icon.arrowCircleDown, Icon.arrowCircleLeft ]
+    in
     div [ class "instructions" ]
         [ p []
             [ b [] [ text "Oh no! " ]
             , text "Mr. Snake is growing too fast."
             ]
-        , p [] [ text "Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life." ]
         , p []
-            [ text "⬆️ ➡️ ⬇️ ⬅️"
-            , br [] []
+            [ text "Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life."
+            , div [ class "instructions-arrow-icons" ] icons
             , text "Move around using the Arrow keys."
             ]
         ]
 
 
+viewInfo : Html Msg
+viewInfo =
+    let
+        url =
+            "https://github.com/joelchelliah/diet-snake"
+
+        icon =
+            Icon.github |> Icon.present |> Icon.styled [ Icon.lg, Icon.pullLeft ] |> Icon.view
+    in
+    div
+        [ class "info" ]
+        [ icon, a [ href url ] [ text "Find it on Github" ] ]
+
+
 view : Model -> Html Msg
 view model =
     div [ class "game" ]
-        [ viewTitle
+        [ Icon.css
+        , viewTitle
         , viewScores model
         , viewMap model
         , viewGameOver model
         , viewInstructions
+        , viewInfo
         ]
 
 
@@ -146,7 +181,7 @@ subscriptions model =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init 0
+        { init = init initStats
         , update = update
         , view = view
         , subscriptions = subscriptions
