@@ -1,47 +1,14 @@
 module Update exposing (update)
 
+import Generator exposing (..)
+import List exposing (tail)
 import Model exposing (..)
 import Random
 import Utils exposing (..)
 
 
-getNonWallPositions : Map -> List Position
-getNonWallPositions =
-    let
-        getFromRow =
-            List.filterMap
-                (\tile ->
-                    case tile of
-                        Wall ->
-                            Nothing
-
-                        Open pos ->
-                            Just pos
-                )
-    in
-    List.foldl (\row acc -> getFromRow row |> List.append acc) []
-
-
-getFreeTilePositions : List Position -> Map -> List Position
-getFreeTilePositions snakePositions map =
-    let
-        nonWallPositions =
-            getNonWallPositions map
-    in
-    List.filter (\pos -> not <| List.member pos snakePositions) nonWallPositions
-
-
-isSnakeAlive : Snake -> Map -> Bool
-isSnakeAlive { head, tail } map =
-    let
-        isHeadOn pos =
-            head == pos
-    in
-    getFreeTilePositions tail map |> List.any isHeadOn
-
-
-updateSnake : Snake -> Food -> GameState -> Snake
-updateSnake snake food state =
+moveSnake : Snake -> GameState -> Snake
+moveSnake snake state =
     let
         { head, tail, isGrowing } =
             snake
@@ -57,7 +24,8 @@ updateSnake snake food state =
             { snake
                 | head = newHead
                 , tail = newTail
-                , isGrowing = isFoodHere food newHead
+                , canGrow = True
+                , isGrowing = False
             }
     in
     case snake.direction of
@@ -72,27 +40,6 @@ updateSnake snake food state =
 
         Right ->
             Tuple.mapFirst (\v -> v + 1) head |> updateFields
-
-
-positionGenerator : Snake -> Map -> Random.Generator Position
-positionGenerator { head, tail } map =
-    let
-        freePositions =
-            getFreeTilePositions (head :: tail) map
-
-        indexGenerator =
-            Random.int 0 (List.length freePositions - 1)
-
-        lookUpPosition i =
-            case List.drop i freePositions |> List.head of
-                -- Never occurs since lookUp is always successful
-                Nothing ->
-                    ( 1, 1 )
-
-                Just pos ->
-                    pos
-    in
-    Random.map lookUpPosition indexGenerator
 
 
 turnSnake : Snake -> Direction -> Snake
@@ -115,18 +62,30 @@ turnSnake snake direction =
     { snake | direction = newDirection }
 
 
+trimSnake : Snake -> Int -> ( Snake, List Position )
+trimSnake ({ tail } as snake) trim =
+    let
+        numKept =
+            List.length tail - trim
+
+        newTail =
+            List.take numKept tail
+
+        discard =
+            List.drop numKept tail
+    in
+    ( { snake | tail = newTail }, discard )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg ({ snake, state, pill, map, stats, bestStats } as model) =
     let
         isPaused =
-            model.state == Paused
+            state == Paused
     in
     case msg of
         StartGame ->
             let
-                { stats, bestStats } =
-                    model
-
                 newWeightLoss =
                     if stats.weightLoss > bestStats.weightLoss then
                         stats.weightLoss
@@ -144,19 +103,25 @@ update msg model =
                 ( { model | state = Paused }, Cmd.none )
 
         KeyPress direction ->
-            ( { model | snake = turnSnake model.snake direction }, Cmd.none )
+            ( { model | snake = turnSnake snake direction }, Cmd.none )
+
+        Grow ->
+            ( { model | snake = { snake | isGrowing = snake.canGrow } }, Cmd.none )
 
         Tick ->
             let
-                { snake, state, food, map } =
-                    model
-
                 newSnake =
-                    updateSnake snake food state
+                    moveSnake snake state
+
+                toNewPillMsg ( pos, trim ) =
+                    NewPillAndTrimSnake pos trim
 
                 newCommand =
-                    if food == Nothing || isSnakeOnFood newSnake food then
-                        Random.generate NewFood (positionGenerator newSnake map)
+                    if isSnakeOnPill newSnake pill then
+                        Random.generate toNewPillMsg (positionAndTrimmingGenerator newSnake map False)
+
+                    else if pill == Nothing then
+                        Random.generate toNewPillMsg (positionAndTrimmingGenerator newSnake map True)
 
                     else
                         Cmd.none
@@ -164,11 +129,15 @@ update msg model =
             if isPaused then
                 ( model, Cmd.none )
 
-            else if isSnakeAlive newSnake map then
+            else if isSnakeOnFreeTile newSnake map then
                 ( { model | snake = newSnake }, newCommand )
 
             else
                 ( { model | state = GameOver }, Cmd.none )
 
-        NewFood pos ->
-            ( { model | food = Just pos }, Cmd.none )
+        NewPillAndTrimSnake pos trim ->
+            let
+                ( newSnake, discard ) =
+                    trimSnake snake trim
+            in
+            ( { model | pill = Just pos, snake = newSnake, discardedSnake = discard }, Cmd.none )

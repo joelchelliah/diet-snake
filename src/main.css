@@ -134,8 +134,8 @@ body {
   border-color: #875 #211 #211 #875;
 }
 
-.food {
-  background-image: url('/food.ico');
+.pill {
+  background-image: url('/pill.ico');
   background-size: 14px;
   border-color: white;
 }

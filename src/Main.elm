@@ -22,10 +22,12 @@ import Utils exposing (..)
 
 
 -- TODO: Icon module ???
+-- TODO: Discard gradually disappearing (css?)
+-- TODO: Update score
 
 
-viewTile : Snake -> Food -> Bool -> Tile -> Html Msg
-viewTile snake food isGameOver tile =
+viewTile : Snake -> Pill -> List Position -> Bool -> Tile -> Html Msg
+viewTile snake pill discardedSnake isGameOver tile =
     case tile of
         Wall ->
             span [ class "tile wall" ] []
@@ -45,18 +47,21 @@ viewTile snake food isGameOver tile =
                 else
                     span [ class "tile snake-body" ] []
 
-            else if isFoodHere food pos then
-                span [ class "tile food" ] []
+            else if isPillHere pill pos then
+                span [ class "tile pill" ] []
+
+            else if List.any (\discard -> pos == discard) discardedSnake then
+                span [ class "tile snake-dead" ] []
 
             else
                 span [ class "tile open" ] []
 
 
 viewMap : Model -> Html Msg
-viewMap { snake, food, map, state } =
+viewMap { snake, pill, discardedSnake, map, state } =
     let
         viewRow row =
-            div [ class "row" ] (List.map (viewTile snake food (state == GameOver)) row)
+            div [ class "row" ] (List.map (viewTile snake pill discardedSnake (state == GameOver)) row)
     in
     div [ class "map" ] (List.map viewRow map)
 
@@ -187,7 +192,8 @@ subscriptions model =
 
         _ ->
             Sub.batch
-                [ Time.every 80 (\_ -> Tick)
+                [ Time.every 100 (\_ -> Tick)
+                , Time.every 300 (\_ -> Grow)
                 , onKeyDown <| Decode.map keyToMsg <| Decode.field "key" Decode.string
                 ]
 

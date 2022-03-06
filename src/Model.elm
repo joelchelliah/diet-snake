@@ -3,7 +3,8 @@ module Model exposing (..)
 
 type alias Model =
     { snake : Snake
-    , food : Food
+    , discardedSnake : List Position
+    , pill : Pill
     , state : GameState
     , map : Map
     , stats : Stats
@@ -18,8 +19,9 @@ type alias Position =
 type alias Snake =
     { head : Position
     , tail : List Position
-    , isGrowing : Bool
     , direction : Direction
+    , isGrowing : Bool
+    , canGrow : Bool -- To prevent snake from growing immediately
     }
 
 
@@ -29,7 +31,7 @@ type alias Stats =
     }
 
 
-type alias Food =
+type alias Pill =
     Maybe Position
 
 
@@ -64,11 +66,22 @@ type Msg
     | KeyPress Direction
     | Pause
     | Tick
-    | NewFood Position
+    | Grow
+    | NewPillAndTrimSnake Position Int
 
 
-createSnake : Int -> Snake
-createSnake maxLength =
+gameWidth : number
+gameWidth =
+    40
+
+
+gameHeight : number
+gameHeight =
+    30
+
+
+initSnake : Int -> Snake
+initSnake maxLength =
     let
         head =
             ( gameWidth // 2, gameHeight // 2 )
@@ -82,28 +95,26 @@ createSnake maxLength =
     in
     { head = head
     , tail = createTail 0
-    , isGrowing = False
     , direction = Up
+    , isGrowing = False
+    , canGrow = False
     }
 
 
-createTile : Int -> Int -> Position -> Tile
-createTile width height ( x, y ) =
-    if x == 1 || y == 1 || x == width || y == height then
-        Wall
+initMap : Int -> Int -> Map
+initMap width height =
+    let
+        initTile ( x, y ) =
+            if x == 1 || y == 1 || x == width || y == height then
+                Wall
 
-    else
-        Open ( x, y )
+            else
+                Open ( x, y )
 
-
-createRow : Int -> Int -> Int -> Row
-createRow width height y =
-    List.map (\x -> createTile width height ( x, y )) (List.range 1 width)
-
-
-createMap : Int -> Int -> Map
-createMap width height =
-    List.map (createRow width height) (List.range 1 height)
+        initRow y =
+            List.map (\x -> initTile ( x, y )) (List.range 1 width)
+    in
+    List.map initRow (List.range 1 height)
 
 
 initStats : Stats
@@ -115,22 +126,13 @@ initStats =
 
 init : Stats -> () -> ( Model, Cmd Msg )
 init bestStats () =
-    ( { snake = createSnake 5
-      , food = Nothing
+    ( { snake = initSnake 5
+      , discardedSnake = []
+      , pill = Nothing
       , state = Running
-      , map = createMap gameWidth gameHeight
+      , map = initMap gameWidth gameHeight
       , stats = initStats
       , bestStats = initStats
       }
     , Cmd.none
     )
-
-
-gameWidth : number
-gameWidth =
-    40
-
-
-gameHeight : number
-gameHeight =
-    30
