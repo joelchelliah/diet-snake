@@ -1,7 +1,7 @@
 {
   "name": "diet-snake",
   "version": "1.0.0",
-  "description": "The backward snake game!",
+  "description": "The totally backward snake game!",
   "main": "index.html",
   "scripts": {
     "dev": "vite",
