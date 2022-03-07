@@ -2,17 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Browser.Events exposing (onKeyDown)
-import FontAwesome.Attributes as Icon
-import FontAwesome.Brands as Icon
-import FontAwesome.Icon as Icon exposing (Icon)
-import FontAwesome.Layering as Icon
-import FontAwesome.Solid as Icon
-import FontAwesome.Styles as Icon
-import FontAwesome.Svg as SvgIcon
-import FontAwesome.Transforms as Icon
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Icon exposing (..)
 import Json.Decode as Decode
 import Model exposing (..)
 import Time
@@ -119,14 +112,6 @@ viewModal { state } =
 
 viewInstructions : Html Msg
 viewInstructions =
-    let
-        viewIcon i =
-            i |> Icon.present |> Icon.transform [ Icon.shrink 2 ] |> Icon.styled [ Icon.lg ] |> Icon.view
-
-        icons =
-            List.map viewIcon
-                [ Icon.arrowCircleUp, Icon.arrowCircleRight, Icon.arrowCircleDown, Icon.arrowCircleLeft ]
-    in
     div [ class "instructions" ]
         [ p []
             [ b [] [ text "Oh no! " ]
@@ -134,7 +119,7 @@ viewInstructions =
             ]
         , p []
             [ text "Help him lose weight by taking his diet supplements, and ensure that he lives a long and prosperous life."
-            , div [ class "instructions-arrow-icons" ] icons
+            , div [ class "instructions-arrow-icons" ] arrowIcons
             , text "Move around using the Arrow keys."
             ]
         ]
@@ -145,19 +130,16 @@ viewGithub =
     let
         url =
             "https://github.com/joelchelliah/diet-snake"
-
-        icon =
-            Icon.github |> Icon.present |> Icon.styled [ Icon.lg, Icon.pullLeft ] |> Icon.view
     in
     div
         [ class "github" ]
-        [ icon, a [ href url ] [ text "Find me on Github" ] ]
+        [ githubIcon, a [ href url ] [ text "Find me on Github" ] ]
 
 
 view : Model -> Html Msg
 view model =
     div [ class "game" ]
-        [ Icon.css
+        [ iconCss
         , viewTitle
         , viewScoreBoard model
         , viewMap model
