@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Animation exposing (..)
 import Browser
 import Browser.Events exposing (onKeyDown)
 import Html exposing (..)
@@ -38,7 +39,7 @@ viewTile snake pill discardedSnake isGameOver tile =
                 span [ class "tile pill" ] []
 
             else if List.any (\discard -> pos == discard) discardedSnake then
-                span [ class "tile snake-dead" ] []
+                fadeAndShrinkAway [ class "tile snake-dead" ] []
 
             else
                 span [ class "tile open" ] []
@@ -134,7 +135,7 @@ viewModal { state } =
         GameOver ->
             div [ class "modal" ]
                 [ div [ class "modal-title red-text" ] [ text "- Snake is dead -" ]
-                , viewPressEnterTo "try again."
+                , viewPressEnterTo "start a new diet."
                 ]
 
         _ ->

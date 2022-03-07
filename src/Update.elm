@@ -77,6 +77,33 @@ trimSnake ({ tail } as snake) trim =
     ( { snake | tail = newTail }, discard )
 
 
+getBestStats : Model -> Stats
+getBestStats { stats, bestStats } =
+    let
+        newWeightLoss =
+            if stats.weightLoss > bestStats.weightLoss then
+                stats.weightLoss
+
+            else
+                bestStats.weightLoss
+
+        newStepsTaken =
+            if stats.stepsTaken > bestStats.stepsTaken then
+                stats.stepsTaken
+
+            else
+                bestStats.stepsTaken
+
+        newPillsTaken =
+            if stats.pillsTaken > bestStats.pillsTaken then
+                stats.pillsTaken
+
+            else
+                bestStats.pillsTaken
+    in
+    { bestStats | weightLoss = newWeightLoss, stepsTaken = newStepsTaken, pillsTaken = newPillsTaken }
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ snake, state, pill, map, stats, bestStats } as model) =
     let
@@ -88,29 +115,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
     in
     case msg of
         StartGame ->
-            let
-                newWeightLoss =
-                    if stats.weightLoss > bestStats.weightLoss then
-                        stats.weightLoss
-
-                    else
-                        bestStats.weightLoss
-
-                newStepsTaken =
-                    if stats.stepsTaken > bestStats.stepsTaken then
-                        stats.stepsTaken
-
-                    else
-                        bestStats.stepsTaken
-
-                newPillsTaken =
-                    if stats.pillsTaken > bestStats.pillsTaken then
-                        stats.pillsTaken
-
-                    else
-                        bestStats.pillsTaken
-            in
-            init { bestStats | weightLoss = newWeightLoss, stepsTaken = newStepsTaken, pillsTaken = newPillsTaken } ()
+            init bestStats ()
 
         Enter ->
             if isPaused then
@@ -160,7 +165,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 ( { model | snake = newSnake, stats = newStats }, newCommand )
 
             else
-                ( { model | state = GameOver }, Cmd.none )
+                ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
 
         NewPillAndTrimSnake pos trim ->
             let
