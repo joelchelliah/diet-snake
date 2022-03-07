@@ -59,8 +59,9 @@ viewTitle state =
         titleText =
             if state == GameOver then
                 span [ class "blue-text" ]
-                    [ s [ class "grey-text" ] [ text "Diet" ]
-                    , span [ class "red-text" ] [ text "Dead " ]
+                    [ span [ class "red-text" ] [ text "D" ]
+                    , s [ class "grey-text" ] [ text "iet" ]
+                    , span [ class "red-text" ] [ text "ead " ]
                     , text "Snake"
                     ]
 
@@ -96,7 +97,7 @@ viewPressEnterTo : String -> Html Msg
 viewPressEnterTo reason =
     div []
         [ text "Press "
-        , b [] [ i [] [ text "Enter" ] ]
+        , b [] [ i [ class "blue-text" ] [ text "Enter" ] ]
         , text (" to " ++ reason)
         ]
 
@@ -110,6 +111,9 @@ viewModal { state } =
                 , div [ class "modal-text" ]
                     [ p [] [ text "Mr. Snake is growing too fast." ]
                     , p [] [ text "Help him lose weight by taking his diet supplements, and ensure that he lives a long and prosperous life." ]
+                    , arrowIcons
+                    , text "Move around using the arrow keys."
+                    , br [] []
                     ]
                 , viewPressEnterTo "start the diet!"
                 ]
@@ -130,21 +134,6 @@ viewModal { state } =
             span [] []
 
 
-viewInstructions : Html Msg
-viewInstructions =
-    div [ class "instructions" ]
-        [ p []
-            [ b [] [ text "Oh no! " ]
-            , text "Mr. Snake is growing too fast."
-            ]
-        , p []
-            [ text "Help him lose weight by taking his diet supplements, and ensure that he lives a long and prosperous life."
-            , div [ class "instructions-arrow-icons" ] arrowIcons
-            , text "Move around using the Arrow keys."
-            ]
-        ]
-
-
 viewGithub : Html Msg
 viewGithub =
     let
@@ -161,10 +150,9 @@ view model =
     div [ class "game" ]
         [ iconCss
         , viewTitle model.state
-        , viewScoreBoard model
         , viewMap model
+        , viewScoreBoard model
         , viewModal model
-        , viewInstructions
         , viewGithub
         ]
 

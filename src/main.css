@@ -17,6 +17,7 @@ body {
   border-bottom: solid 1px #DDD;
   width: 100%;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .header-icon {
@@ -51,7 +52,7 @@ body {
 .scoreboard {
   display: flex;
   flex-direction: column;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 }
 
 /* * * * * * * * * * * * * * * * */
@@ -59,7 +60,7 @@ body {
 
 .modal {
   position: absolute;
-  top: 20rem;
+  top: 15rem;
   background-color: #fff;
   opacity: 1;
   padding: 1rem;
@@ -88,6 +89,7 @@ body {
 
 .modal-text {
   font-size: 0.875rem;
+  margin-bottom: 1rem;
 }
 
 /* * * * * * * * * * * * * * * * */
@@ -148,11 +150,11 @@ body {
   width: 100%;
 }
 
-.instructions-arrow-icons {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+.arrow-icons {
   margin: 0.5rem 0;
+}
+.arrow-icon {
+  margin: 0 0.25rem;
 }
 
 .github {
