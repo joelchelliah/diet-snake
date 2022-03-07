@@ -7,6 +7,9 @@ body {
   width: 40rem;
 }
 
+/* * * * * * * * * * * * * * * * */
+/* Titles and scoreboard styling */
+
 .header {
   display: flex;
   flex-direction: row;
@@ -37,7 +40,7 @@ body {
   font-style: italic;
 }
 
-.scores {
+.scoreboard {
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -45,33 +48,8 @@ body {
   margin-top: 1.5rem;
 }
 
-.instructions {
-  margin: 2rem 0 0.5rem;
-  width: 100%;
-}
-
-.instructions-arrow-icons {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin: 0.5rem 0;
-}
-
-.info {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  padding-top: 1rem;
-  border-top: solid 1px #ddd;
-}
-
-.game-over-title {
-  font-weight: 800;
-  color: #a33;
-  margin-bottom: 1rem;
-}
+/* * * * * * * * * * * * * * * * */
+/* Info modal styling */
 
 .modal {
   position: absolute;
@@ -88,6 +66,23 @@ body {
   font-weight: 800;
   color: #55c;
   margin-bottom: 0.5rem;
+}
+
+.red-text {
+  color: #a33;
+}
+
+.modal-text {
+  font-size: 0.875rem;
+}
+
+/* * * * * * * * * * * * * * * * */
+/* Map and snake styling */
+
+.game {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .row {
@@ -131,8 +126,28 @@ body {
   border-color: white;
 }
 
-.game {
+/* * * * * * * * * * * * * * * * */
+/* Footer info styling */
+
+.instructions {
+  margin: 2rem 0 0.5rem;
+  width: 100%;
+}
+
+.instructions-arrow-icons {
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.github {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
   align-items: center;
-  flex-direction: column;
+  justify-content: center;
+  font-size: 0.875rem;
+  padding-top: 1rem;
+  border-top: solid 1px #ddd;
 }

@@ -20,13 +20,6 @@ import Update exposing (update)
 import Utils exposing (..)
 
 
-
--- TODO: Icon module ???
--- TODO: Discard gradually disappearing (css?)
--- TODO: Update score
--- TODO: modal shadows
-
-
 viewTile : Snake -> Pill -> List Position -> Bool -> Tile -> Html Msg
 viewTile snake pill discardedSnake isGameOver tile =
     case tile of
@@ -78,11 +71,20 @@ viewTitle =
         ]
 
 
-viewScores : Model -> Html Msg
-viewScores { stats, bestStats } =
-    div [ class "scores" ]
+viewScoreBoard : Model -> Html Msg
+viewScoreBoard { stats, bestStats } =
+    div [ class "scoreboard" ]
         [ div [] [ text ("Current weight loss: " ++ String.fromInt stats.weightLoss) ]
         , div [] [ text ("Most weight lost: " ++ String.fromInt bestStats.weightLoss) ]
+        ]
+
+
+viewPressEnterTo : String -> Html Msg
+viewPressEnterTo reason =
+    div []
+        [ text "Press "
+        , b [] [ i [] [ text "Enter" ] ]
+        , text (" to " ++ reason)
         ]
 
 
@@ -91,27 +93,24 @@ viewModal { state } =
     case state of
         Init ->
             div [ class "modal" ]
-                [ div [ class "modal-title" ] [ text "New Game" ]
-
-                -- , text "Mr. Snake is growing too fast."
-                -- , p [] [ text "Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life." ]
-                , text "Press "
-                , b [] [ i [] [ text "Enter" ] ]
-                , text " to start the diet!"
+                [ div [ class "modal-title" ] [ text "Oh no!" ]
+                , div [ class "modal-text" ]
+                    [ p [] [ text "Mr. Snake is growing too fast." ]
+                    , p [] [ text "Help him lose weight by taking his diet supplements, and ensure that he lives a long and prosperous life." ]
+                    ]
+                , viewPressEnterTo "start the diet!"
                 ]
 
         Paused ->
             div [ class "modal" ]
-                [ div [ class "modal-title" ] [ text "Paused" ]
-                , text "Press "
-                , b [] [ i [] [ text "Enter" ] ]
-                , text " to resume the diet"
+                [ div [ class "modal-title" ] [ text "- Paused -" ]
+                , viewPressEnterTo "resume your diet."
                 ]
 
         GameOver ->
             div [ class "modal" ]
-                [ div [ class "game-over-title" ] [ text "Snake is dead!" ]
-                , a [ href "", onClick StartGame, style "text-decoration" "underline" ] [ text "Try again?" ]
+                [ div [ class "modal-title red-text" ] [ text "Snake is dead!" ]
+                , viewPressEnterTo "try again."
                 ]
 
         _ ->
@@ -134,15 +133,15 @@ viewInstructions =
             , text "Mr. Snake is growing too fast."
             ]
         , p []
-            [ text "Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life."
+            [ text "Help him lose weight by taking his diet supplements, and ensure that he lives a long and prosperous life."
             , div [ class "instructions-arrow-icons" ] icons
             , text "Move around using the Arrow keys."
             ]
         ]
 
 
-viewInfo : Html Msg
-viewInfo =
+viewGithub : Html Msg
+viewGithub =
     let
         url =
             "https://github.com/joelchelliah/diet-snake"
@@ -151,8 +150,8 @@ viewInfo =
             Icon.github |> Icon.present |> Icon.styled [ Icon.lg, Icon.pullLeft ] |> Icon.view
     in
     div
-        [ class "info" ]
-        [ icon, a [ href url ] [ text "Find it on Github" ] ]
+        [ class "github" ]
+        [ icon, a [ href url ] [ text "Find me on Github" ] ]
 
 
 view : Model -> Html Msg
@@ -160,11 +159,11 @@ view model =
     div [ class "game" ]
         [ Icon.css
         , viewTitle
-        , viewScores model
+        , viewScoreBoard model
         , viewMap model
         , viewModal model
         , viewInstructions
-        , viewInfo
+        , viewGithub
         ]
 
 
@@ -184,7 +183,7 @@ keyToMsg string =
             KeyPress Left
 
         "Enter" ->
-            Pause
+            Enter
 
         _ ->
             Tick
@@ -192,16 +191,20 @@ keyToMsg string =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+    let
+        keyDownSubscription =
+            onKeyDown <| Decode.map keyToMsg <| Decode.field "key" Decode.string
+    in
     case model.state of
-        GameOver ->
-            Sub.none
-
-        _ ->
+        Running ->
             Sub.batch
                 [ Time.every 100 (\_ -> Tick)
                 , Time.every 300 (\_ -> Grow)
-                , onKeyDown <| Decode.map keyToMsg <| Decode.field "key" Decode.string
+                , keyDownSubscription
                 ]
+
+        _ ->
+            keyDownSubscription
 
 
 main : Program () Model Msg

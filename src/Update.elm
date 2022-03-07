@@ -82,6 +82,9 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
     let
         isPaused =
             state == Paused || state == Init
+
+        isDead =
+            state == GameOver
     in
     case msg of
         StartGame ->
@@ -95,9 +98,12 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
             in
             init { bestStats | weightLoss = newWeightLoss } ()
 
-        Pause ->
+        Enter ->
             if isPaused then
                 ( { model | state = Running }, Cmd.none )
+
+            else if isDead then
+                update StartGame model
 
             else
                 ( { model | state = Paused }, Cmd.none )

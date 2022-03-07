@@ -65,7 +65,7 @@ type Tile
 type Msg
     = StartGame
     | KeyPress Direction
-    | Pause
+    | Enter
     | Tick
     | Grow
     | NewPillAndTrimSnake Position Int
