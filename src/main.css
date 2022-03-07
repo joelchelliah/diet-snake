@@ -22,7 +22,7 @@ body {
 
 .header-icon {
   font-size: 4rem;
-  margin-right: 1rem;
+  margin: 0 1rem 0 4rem;
 }
 
 .header-texts {
@@ -36,6 +36,8 @@ body {
 }
 
 .header-texts-subtitle {
+  width: 18rem;
+  display: flex;
   font-size: 1rem;
   color: #AAA;
   font-style: italic;
@@ -66,7 +68,7 @@ body {
   padding: 1rem;
   border: 1px solid #555;
   min-width: 10rem;
-  max-width: 30rem;
+  max-width: 26rem;
 }
 
 .modal-title {

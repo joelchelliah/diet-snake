@@ -56,6 +56,13 @@ viewMap { snake, pill, discardedSnake, map, state } =
 viewTitle : GameState -> Html Msg
 viewTitle state =
     let
+        subTitleText =
+            if state == GameOver then
+                text "Ouch! ...Try again?"
+
+            else
+                text "The totally backward snake game!"
+
         titleText =
             if state == GameOver then
                 span [ class "blue-text" ]
@@ -72,7 +79,7 @@ viewTitle state =
         [ div [ class "header-icon" ] [ text "🐍" ]
         , div [ class "header-texts" ]
             [ div [ class "header-texts-title" ] [ titleText ]
-            , div [ class "header-texts-subtitle" ] [ text "The totally backward snake game!" ]
+            , div [ class "header-texts-subtitle" ] [ subTitleText ]
             ]
         ]
 
@@ -107,10 +114,10 @@ viewModal { state } =
     case state of
         Init ->
             div [ class "modal" ]
-                [ div [ class "modal-title" ] [ text "Oh no!" ]
+                [ div [ class "modal-title" ] [ text "- Oh no -" ]
                 , div [ class "modal-text" ]
-                    [ p [] [ text "Mr. Snake is growing too fast." ]
-                    , p [] [ text "Help him lose weight by taking his diet supplements, and ensure that he lives a long and prosperous life." ]
+                    [ p [] [ text "Mr. Snake is growing too fast!" ]
+                    , p [] [ text "Help him lose weight by taking his diet pills, and ensure that he lives a long and prosperous life." ]
                     , arrowIcons
                     , text "Move around using the arrow keys."
                     , br [] []
@@ -126,7 +133,7 @@ viewModal { state } =
 
         GameOver ->
             div [ class "modal" ]
-                [ div [ class "modal-title red-text" ] [ text "Snake is dead!" ]
+                [ div [ class "modal-title red-text" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "try again."
                 ]
 
