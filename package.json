@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "deploy": "ntl deploy",
+    "deploy-prod": "ntl deploy --prod",
     "start": "vite serve ./",
     "preview": "vite preview"
   },

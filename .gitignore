@@ -2,6 +2,11 @@
 elm-stuff/
 # elm-repl generated files
 repl-temp-*
+
+# Local Netlify folder
+.netlify
+
 node_modules/
 .DS_Store
 */.DS_Store
+dist/
