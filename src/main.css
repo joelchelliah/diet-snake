@@ -40,12 +40,18 @@ body {
   font-style: italic;
 }
 
-.scoreboard {
+.scoreboard-row {
   display: flex;
   width: 100%;
   justify-content: space-between;
   margin-bottom: 1rem;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+.scoreboard {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75rem;
 }
 
 /* * * * * * * * * * * * * * * * */
@@ -70,6 +76,14 @@ body {
 
 .red-text {
   color: #a33;
+}
+
+.blue-text {
+  color: #55c;
+}
+
+.grey-text {
+  color: #AAA;
 }
 
 .modal-text {

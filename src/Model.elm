@@ -26,8 +26,9 @@ type alias Snake =
 
 
 type alias Stats =
-    { pillsTaken : Int
-    , weightLoss : Int
+    { weightLoss : Int
+    , pillsTaken : Int
+    , stepsTaken : Int
     }
 
 
@@ -122,6 +123,7 @@ initStats : Stats
 initStats =
     { weightLoss = 0
     , pillsTaken = 0
+    , stepsTaken = 0
     }
 
 
@@ -133,7 +135,7 @@ init bestStats () =
       , state = Init
       , map = initMap gameWidth gameHeight
       , stats = initStats
-      , bestStats = initStats
+      , bestStats = bestStats
       }
     , Cmd.none
     )

@@ -53,12 +53,24 @@ viewMap { snake, pill, discardedSnake, map, state } =
     div [ class "map" ] (List.map viewRow map)
 
 
-viewTitle : Html Msg
-viewTitle =
+viewTitle : GameState -> Html Msg
+viewTitle state =
+    let
+        titleText =
+            if state == GameOver then
+                span [ class "blue-text" ]
+                    [ s [ class "grey-text" ] [ text "Diet" ]
+                    , span [ class "red-text" ] [ text "Dead " ]
+                    , text "Snake"
+                    ]
+
+            else
+                span [ class "blue-text" ] [ text "Diet Snake" ]
+    in
     div [ class "header" ]
         [ div [ class "header-icon" ] [ text "🐍" ]
         , div [ class "header-texts" ]
-            [ div [ class "header-texts-title" ] [ text "Diet Snake" ]
+            [ div [ class "header-texts-title" ] [ titleText ]
             , div [ class "header-texts-subtitle" ] [ text "The totally backward snake game!" ]
             ]
         ]
@@ -66,9 +78,17 @@ viewTitle =
 
 viewScoreBoard : Model -> Html Msg
 viewScoreBoard { stats, bestStats } =
-    div [ class "scoreboard" ]
-        [ div [] [ text ("Current weight loss: " ++ String.fromInt stats.weightLoss) ]
-        , div [] [ text ("Most weight lost: " ++ String.fromInt bestStats.weightLoss) ]
+    div [ class "scoreboard-row" ]
+        [ div [ class "scoreboard", style "align-items" "flex-start" ]
+            [ div [] [ text ("Steps taken: " ++ String.fromInt stats.stepsTaken) ]
+            , div [] [ text ("Pills consumed: " ++ String.fromInt stats.pillsTaken) ]
+            , div [] [ text ("Weight lost: " ++ String.fromInt stats.weightLoss) ]
+            ]
+        , div [ class "scoreboard", style "align-items" "flex-end" ]
+            [ div [] [ text ("Most steps taken: " ++ String.fromInt bestStats.stepsTaken) ]
+            , div [] [ text ("Most pills consumed: " ++ String.fromInt bestStats.pillsTaken) ]
+            , div [] [ text ("Most weight lost: " ++ String.fromInt bestStats.weightLoss) ]
+            ]
         ]
 
 
@@ -140,7 +160,7 @@ view : Model -> Html Msg
 view model =
     div [ class "game" ]
         [ iconCss
-        , viewTitle
+        , viewTitle model.state
         , viewScoreBoard model
         , viewMap model
         , viewModal model

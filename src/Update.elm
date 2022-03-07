@@ -95,8 +95,22 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
 
                     else
                         bestStats.weightLoss
+
+                newStepsTaken =
+                    if stats.stepsTaken > bestStats.stepsTaken then
+                        stats.stepsTaken
+
+                    else
+                        bestStats.stepsTaken
+
+                newPillsTaken =
+                    if stats.pillsTaken > bestStats.pillsTaken then
+                        stats.pillsTaken
+
+                    else
+                        bestStats.pillsTaken
             in
-            init { bestStats | weightLoss = newWeightLoss } ()
+            init { bestStats | weightLoss = newWeightLoss, stepsTaken = newStepsTaken, pillsTaken = newPillsTaken } ()
 
         Enter ->
             if isPaused then
@@ -122,6 +136,13 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 toNewPillMsg ( pos, trim ) =
                     NewPillAndTrimSnake pos trim
 
+                newStats =
+                    if isSnakeOnPill newSnake pill then
+                        { stats | stepsTaken = stats.stepsTaken + 1, pillsTaken = stats.pillsTaken + 1 }
+
+                    else
+                        { stats | stepsTaken = stats.stepsTaken + 1 }
+
                 newCommand =
                     if isSnakeOnPill newSnake pill then
                         Random.generate toNewPillMsg (positionAndTrimmingGenerator newSnake map False)
@@ -136,7 +157,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 ( model, Cmd.none )
 
             else if isSnakeOnFreeTile newSnake map then
-                ( { model | snake = newSnake }, newCommand )
+                ( { model | snake = newSnake, stats = newStats }, newCommand )
 
             else
                 ( { model | state = GameOver }, Cmd.none )
@@ -145,5 +166,8 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
             let
                 ( newSnake, discard ) =
                     trimSnake snake trim
+
+                newStats =
+                    { stats | weightLoss = stats.weightLoss + trim }
             in
-            ( { model | pill = Just pos, snake = newSnake, discardedSnake = discard }, Cmd.none )
+            ( { model | pill = Just pos, snake = newSnake, discardedSnake = discard, stats = newStats }, Cmd.none )
