@@ -3,7 +3,6 @@ module Model exposing (..)
 
 type alias Model =
     { snake : Snake
-    , discardedSnake : List Position
     , pill : Pill
     , state : GameState
     , map : Map
@@ -19,6 +18,7 @@ type alias Position =
 type alias Snake =
     { head : Position
     , tail : List Position
+    , discard : List Position
     , direction : Direction
     , isGrowing : Bool
     , canGrow : Bool -- To prevent snake from growing immediately
@@ -69,7 +69,7 @@ type Msg
     | Enter
     | Tick
     | Grow
-    | NewPillAndTrimSnake Position Int
+    | NewPillAndSnakeTrimming Position Int
 
 
 gameWidth : number
@@ -97,6 +97,7 @@ initSnake maxLength =
     in
     { head = head
     , tail = createTail 0
+    , discard = []
     , direction = Up
     , isGrowing = False
     , canGrow = False
@@ -130,7 +131,6 @@ initStats =
 init : Stats -> () -> ( Model, Cmd Msg )
 init bestStats () =
     ( { snake = initSnake 5
-      , discardedSnake = []
       , pill = Nothing
       , state = Init
       , map = initMap gameWidth gameHeight

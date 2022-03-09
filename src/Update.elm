@@ -7,10 +7,10 @@ import Random
 import Utils exposing (..)
 
 
-moveSnake : Snake -> GameState -> Snake
-moveSnake snake state =
+moveSnakeAndUpdateDiscard : Snake -> Snake
+moveSnakeAndUpdateDiscard snake =
     let
-        { head, tail, isGrowing } =
+        { head, tail, isGrowing, discard } =
             snake
 
         newTail =
@@ -20,12 +20,24 @@ moveSnake snake state =
             else
                 head :: List.take (List.length tail - 1) tail
 
+        -- Discard delay to ensure that css animation is finished running before removing
+        discardDelay =
+            10
+
+        newDiscard =
+            if List.length discard > discardDelay then
+                List.drop 1 discard
+
+            else
+                discard
+
         updateFields newHead =
             { snake
                 | head = newHead
                 , tail = newTail
                 , canGrow = True
                 , isGrowing = False
+                , discard = newDiscard
             }
     in
     case snake.direction of
@@ -62,19 +74,16 @@ turnSnake snake direction =
     { snake | direction = newDirection }
 
 
-trimSnake : Snake -> Int -> ( Snake, List Position )
-trimSnake ({ tail } as snake) trim =
+trimSnake : Snake -> Int -> Snake
+trimSnake ({ tail, discard } as snake) trim =
     let
         numKept =
             List.length tail - trim
-
-        newTail =
-            List.take numKept tail
-
-        discard =
-            List.drop numKept tail
     in
-    ( { snake | tail = newTail }, discard )
+    { snake
+        | tail = List.take numKept tail
+        , discard = List.drop numKept tail |> List.reverse |> List.append discard
+    }
 
 
 getBestStats : Model -> Stats
@@ -136,10 +145,10 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
         Tick ->
             let
                 newSnake =
-                    moveSnake snake state
+                    moveSnakeAndUpdateDiscard snake
 
                 toNewPillMsg ( pos, trim ) =
-                    NewPillAndTrimSnake pos trim
+                    NewPillAndSnakeTrimming pos trim
 
                 newStats =
                     if isSnakeOnPill newSnake pill then
@@ -167,12 +176,12 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
             else
                 ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
 
-        NewPillAndTrimSnake pos trim ->
+        NewPillAndSnakeTrimming pos trim ->
             let
-                ( newSnake, discard ) =
+                newSnake =
                     trimSnake snake trim
 
                 newStats =
                     { stats | weightLoss = stats.weightLoss + trim }
             in
-            ( { model | pill = Just pos, snake = newSnake, discardedSnake = discard, stats = newStats }, Cmd.none )
+            ( { model | pill = Just pos, snake = newSnake, stats = newStats }, Cmd.none )

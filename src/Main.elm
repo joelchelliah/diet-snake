@@ -14,42 +14,46 @@ import Update exposing (update)
 import Utils exposing (..)
 
 
-viewTile : Snake -> Pill -> List Position -> Bool -> Tile -> Html Msg
-viewTile snake pill discardedSnake isGameOver tile =
+viewTile : Snake -> Pill -> Bool -> Tile -> Html Msg
+viewTile snake pill isGameOver tile =
     case tile of
         Wall ->
-            span [ class "tile wall" ] []
+            div [ class "tile wall" ] []
 
         Open pos ->
+            let
+                onBackgroundMapTile content =
+                    div [ class "background-map-tile open" ] [ content ]
+            in
             if snake.head == pos then
                 if isGameOver then
-                    span [ class "tile snake-dead" ] []
+                    div [ class "tile snake-dead" ] [] |> onBackgroundMapTile
 
                 else
-                    span [ class "tile snake-head" ] []
+                    div [ class "tile snake-head" ] [] |> onBackgroundMapTile
 
             else if isSnakeHere snake pos then
                 if isGameOver then
-                    span [ class "tile snake-dead" ] []
+                    div [ class "tile snake-dead" ] [] |> onBackgroundMapTile
 
                 else
-                    span [ class "tile snake-body" ] []
+                    div [ class "tile snake-body" ] [] |> onBackgroundMapTile
 
             else if isPillHere pill pos then
-                span [ class "tile pill" ] []
+                div [ class "tile pill" ] [] |> onBackgroundMapTile
 
-            else if List.any (\discard -> pos == discard) discardedSnake then
-                fadeAndShrinkAway [ class "tile snake-dead" ] []
+            else if List.any (\dis -> pos == dis) snake.discard then
+                fadeAndShrinkAway [ class "tile snake-dead" ] [] |> onBackgroundMapTile
 
             else
-                span [ class "tile open" ] []
+                div [ class "tile open" ] []
 
 
 viewMap : Model -> Html Msg
-viewMap { snake, pill, discardedSnake, map, state } =
+viewMap { snake, pill, map, state } =
     let
         viewRow row =
-            div [ class "row" ] (List.map (viewTile snake pill discardedSnake (state == GameOver)) row)
+            div [ class "row" ] (List.map (viewTile snake pill (state == GameOver)) row)
     in
     div [ class "map" ] (List.map viewRow map)
 

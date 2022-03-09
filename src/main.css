@@ -107,16 +107,29 @@ body {
   height: 16px;
 }
 
+/*
+ * Only to be used behind dynamically changing tiles
+ * E.g. snake, food, discard, ...
+*/
+/*  TODO: Outline is outside border.... we need something that is inside border... */
+.background-map-tile {
+  display: inline-block;
+  outline: 1px solid #aad;
+  width: 16px;
+  height: 16px;
+}
+
 .tile {
   display: inline-block;
   border: 1px solid;
+  border-top: 1px solid;
   width: 14px;
   height: 14px;
 }
 
 .open {
   background-color: #effffe;
-  border-color: #fff #adddda #adddda #fff;
+  border-color: #fff #aad #aad #fff;
 }
 
 .wall {
