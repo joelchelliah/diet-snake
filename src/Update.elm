@@ -7,10 +7,10 @@ import Random
 import Utils exposing (..)
 
 
-moveSnakeAndUpdateDiscard : Snake -> Snake
-moveSnakeAndUpdateDiscard snake =
+moveSnakeAndUpdateTrimming : Snake -> Snake
+moveSnakeAndUpdateTrimming snake =
     let
-        { head, tail, isGrowing, discard } =
+        { head, tail, isGrowing, trimmed } =
             snake
 
         newTail =
@@ -20,16 +20,16 @@ moveSnakeAndUpdateDiscard snake =
             else
                 head :: List.take (List.length tail - 1) tail
 
-        -- Discard delay to ensure that css animation is finished running before removing
-        discardDelay =
+        -- Trim delay to ensure that css animation is finished running before removing
+        trimDelay =
             10
 
-        newDiscard =
-            if List.length discard > discardDelay then
-                List.drop 1 discard
+        newTrimmed =
+            if List.length trimmed > trimDelay then
+                List.drop 1 trimmed
 
             else
-                discard
+                trimmed
 
         updateFields newHead =
             { snake
@@ -37,7 +37,7 @@ moveSnakeAndUpdateDiscard snake =
                 , tail = newTail
                 , canGrow = True
                 , isGrowing = False
-                , discard = newDiscard
+                , trimmed = newTrimmed
             }
     in
     case snake.direction of
@@ -54,36 +54,72 @@ moveSnakeAndUpdateDiscard snake =
             Tuple.mapFirst (\v -> v + 1) head |> updateFields
 
 
-turnSnake : Snake -> Direction -> Snake
-turnSnake snake direction =
+turnSnake : Direction -> Snake -> Snake
+turnSnake direction snake =
     let
-        currentDirection =
+        prevSelectedDirection =
             snake.direction
 
-        isValid =
-            ((direction == Up || direction == Down) && (currentDirection == Left || currentDirection == Right))
-                || ((direction == Left || direction == Right) && (currentDirection == Up || currentDirection == Down))
+        isNewDirectionValid =
+            ((direction == Up || direction == Down) && (prevSelectedDirection == Left || prevSelectedDirection == Right))
+                || ((direction == Left || direction == Right) && (prevSelectedDirection == Up || prevSelectedDirection == Down))
 
         newDirection =
-            if isValid then
+            if isNewDirectionValid then
                 direction
 
             else
-                currentDirection
+                prevSelectedDirection
     in
     { snake | direction = newDirection }
 
 
 trimSnake : Snake -> Int -> Snake
-trimSnake ({ tail, discard } as snake) trim =
+trimSnake ({ tail, trimmed } as snake) trim =
     let
         numKept =
             List.length tail - trim
     in
     { snake
         | tail = List.take numKept tail
-        , discard = List.drop numKept tail |> List.reverse |> List.append discard
+        , trimmed = List.drop numKept tail |> List.reverse |> List.append trimmed
     }
+
+
+
+-- When directions are given too quickly, the snake's direction may change twice before position is updated.
+-- This can lead to moving the snake in an invalid direction. E.g: Up -> Left -> Down, while the snake is still facing up.
+-- Checking for this case here:
+
+
+isSnakePositionInSyncWithDirection : Snake -> Bool
+isSnakePositionInSyncWithDirection snake =
+    let
+        ( headX, headY ) =
+            snake.head
+
+        prevSelectedDirection =
+            snake.direction
+
+        prevMovedDirection =
+            case List.head snake.tail of
+                Nothing ->
+                    prevSelectedDirection
+
+                Just ( tailX, tailY ) ->
+                    if headX > tailX then
+                        Right
+
+                    else if headY > tailY then
+                        Down
+
+                    else if headY < tailY then
+                        Up
+
+                    else
+                        Left
+    in
+    prevSelectedDirection == prevMovedDirection
 
 
 getBestStats : Model -> Stats
@@ -137,7 +173,15 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 ( { model | state = Paused }, Cmd.none )
 
         KeyPress direction ->
-            ( { model | snake = turnSnake snake direction }, Cmd.none )
+            let
+                newSnake =
+                    if isSnakePositionInSyncWithDirection snake then
+                        turnSnake direction snake
+
+                    else
+                        moveSnakeAndUpdateTrimming snake |> turnSnake direction
+            in
+            ( { model | snake = newSnake }, Cmd.none )
 
         Grow ->
             ( { model | snake = { snake | isGrowing = snake.canGrow } }, Cmd.none )
@@ -145,7 +189,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
         Tick ->
             let
                 newSnake =
-                    moveSnakeAndUpdateDiscard snake
+                    moveSnakeAndUpdateTrimming snake
 
                 toNewPillMsg ( pos, trim ) =
                     NewPillAndSnakeTrimming pos trim

@@ -18,7 +18,7 @@ type alias Position =
 type alias Snake =
     { head : Position
     , tail : List Position
-    , discard : List Position
+    , trimmed : List Position
     , direction : Direction
     , isGrowing : Bool
     , canGrow : Bool -- To prevent snake from growing immediately
@@ -97,7 +97,7 @@ initSnake maxLength =
     in
     { head = head
     , tail = createTail 0
-    , discard = []
+    , trimmed = []
     , direction = Up
     , isGrowing = False
     , canGrow = False

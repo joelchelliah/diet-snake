@@ -48,7 +48,7 @@ viewTile snake pill isGameOver tile =
             else if isPillHere pill pos then
                 makeTile "pill" div
 
-            else if List.any (\dis -> pos == dis) snake.discard then
+            else if List.any (\dis -> pos == dis) snake.trimmed then
                 makeTile "snake-dead" fadeAndShrinkAway
 
             else
