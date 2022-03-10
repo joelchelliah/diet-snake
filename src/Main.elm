@@ -9,6 +9,7 @@ import Html.Events exposing (..)
 import Icon exposing (..)
 import Json.Decode as Decode
 import Model exposing (..)
+import Simple.Animation.Animated exposing (ClassName)
 import Time
 import Update exposing (update)
 import Utils exposing (..)
@@ -16,37 +17,42 @@ import Utils exposing (..)
 
 viewTile : Snake -> Pill -> Bool -> Tile -> Html Msg
 viewTile snake pill isGameOver tile =
+    let
+        makeTile className inerTileContainer =
+            case className of
+                "" ->
+                    div [ class "tile outer-tile" ] [ inerTileContainer [] [] ]
+
+                name ->
+                    div [ class "tile outer-tile" ] [ inerTileContainer [ class ("tile inner-tile " ++ name) ] [] ]
+    in
     case tile of
         Wall ->
-            div [ class "tile wall" ] []
+            makeTile "wall" div
 
         Open pos ->
-            let
-                onBackgroundMapTile content =
-                    div [ class "background-map-tile open" ] [ content ]
-            in
             if snake.head == pos then
                 if isGameOver then
-                    div [ class "tile snake-dead" ] [] |> onBackgroundMapTile
+                    makeTile "snake-dead" div
 
                 else
-                    div [ class "tile snake-head" ] [] |> onBackgroundMapTile
+                    makeTile "snake-head" div
 
             else if isSnakeHere snake pos then
                 if isGameOver then
-                    div [ class "tile snake-dead" ] [] |> onBackgroundMapTile
+                    makeTile "snake-dead" div
 
                 else
-                    div [ class "tile snake-body" ] [] |> onBackgroundMapTile
+                    makeTile "snake-body" div
 
             else if isPillHere pill pos then
-                div [ class "tile pill" ] [] |> onBackgroundMapTile
+                makeTile "pill" div
 
             else if List.any (\dis -> pos == dis) snake.discard then
-                fadeAndShrinkAway [ class "tile snake-dead" ] [] |> onBackgroundMapTile
+                makeTile "snake-dead" fadeAndShrinkAway
 
             else
-                div [ class "tile open" ] []
+                makeTile "" span
 
 
 viewMap : Model -> Html Msg

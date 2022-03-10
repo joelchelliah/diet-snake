@@ -3,7 +3,7 @@ body {
   font-size: 1rem;
   margin: 0 auto;
   text-align: center;
-  color: #293c4b;
+  color: #336;
   width: 40rem;
 }
 
@@ -99,37 +99,35 @@ body {
 
 .game {
   display: flex;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
 }
 
 .row {
-  height: 16px;
+  display: flex;
+  flex-direction: row;
+  height: 20px;
 }
 
-/*
- * Only to be used behind dynamically changing tiles
- * E.g. snake, food, discard, ...
-*/
-/*  TODO: Outline is outside border.... we need something that is inside border... */
-.background-map-tile {
-  display: inline-block;
-  outline: 1px solid #aad;
+
+.tile {
+  border: 2px solid;
   width: 16px;
   height: 16px;
 }
 
-.tile {
+/* Used for open (non-wall) tiles,
+ * and also as the background tile behind all other tiles.
+ */
+.outer-tile {
   display: inline-block;
-  border: 1px solid;
-  border-top: 1px solid;
-  width: 14px;
-  height: 14px;
+  background-color: #eef;
+  border-color: #fff #aad #aad #fff;
 }
 
-.open {
-  background-color: #effffe;
-  border-color: #fff #aad #aad #fff;
+.inner-tile {
+  display: block;
+  margin: -2px;
 }
 
 .wall {
@@ -139,11 +137,11 @@ body {
 
 .snake-head {
   background: #a33;
-  border-color: #fdd #644 #644 #fdd;
+  border-color: #daa #644 #644 #daa;
 }
 .snake-body {
   background: #d88;
-  border-color: #caa #422 #422 #caa;
+  border-color: #fbb #422 #422 #fbb;
 }
 
 .snake-dead {
@@ -153,8 +151,8 @@ body {
 
 .pill {
   background-image: url('/pill.ico');
-  background-size: 14px;
-  border-color: white;
+  background-size: 16px;
+  border-color: inherit;
 }
 
 /* * * * * * * * * * * * * * * * */

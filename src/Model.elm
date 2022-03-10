@@ -74,12 +74,12 @@ type Msg
 
 gameWidth : number
 gameWidth =
-    40
+    32
 
 
 gameHeight : number
 gameHeight =
-    30
+    24
 
 
 initSnake : Int -> Snake
