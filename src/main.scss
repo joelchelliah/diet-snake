@@ -1,3 +1,5 @@
+@use "sass:color";
+
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   font-size: 1rem;
@@ -9,6 +11,7 @@ body {
 
 /* * * * * * * * * * * * * * * * */
 /* Titles and scoreboard styling */
+/* * * * * * * * * * * * * * * * */
 
 .header {
   display: flex;
@@ -96,6 +99,26 @@ body {
 
 /* * * * * * * * * * * * * * * * */
 /* Map and snake styling */
+/* * * * * * * * * * * * * * * * */
+
+$tile-border: 2px;
+$tile-size: 16px;
+
+%tile-base {
+  border: $tile-border solid;
+  width: $tile-size;
+  height: $tile-size;
+}
+
+@mixin colored-tile($color: #eef, $saturate: 50%) {
+  @extend %tile-base;
+  $lighter: color.scale($color, $lightness: 50%);
+  $darker: color.scale($color, $lightness: -20%);
+  $highlight: color.scale($lighter, $saturation: $saturate);
+  $shading: color.scale($darker, $saturation: -50%);
+  background-color: $color;
+  border-color: $highlight $shading $shading $highlight;
+}
 
 .game {
   display: flex;
@@ -109,54 +132,42 @@ body {
   height: 20px;
 }
 
-
-.tile {
-  border: 2px solid;
-  width: 16px;
-  height: 16px;
-}
-
 /* Used for open (non-wall) tiles,
  * and also as the background tile behind all other tiles.
  */
 .outer-tile {
   display: inline-block;
-  background-color: #eef;
-  border-color: #fff #aad #aad #fff;
+  @include colored-tile(#ddf);
 }
 
 .inner-tile {
+  @extend %tile-base;
   display: block;
-  margin: -2px;
+  margin: -$tile-border;
 }
 
 .wall {
-  background-color: #bbb;
-  border-color: #ddd #666 #666 #ddd;
+  @include colored-tile(#aaa, 0%);
 }
 
 .snake-head {
-  background: #a33;
-  border-color: #daa #644 #644 #daa;
+  @include colored-tile(#a33);
 }
 .snake-body {
-  background: #d88;
-  border-color: #fbb #422 #422 #fbb;
+  @include colored-tile(#d66);
 }
 
 .snake-dead {
-  background: #753;
-  border-color: #875 #211 #211 #875;
+  @include colored-tile(#753);
 }
 
 .pill {
-  background-image: url('/pill.ico');
-  background-size: 16px;
-  border-color: inherit;
+  @include colored-tile(#5a5);
 }
 
 /* * * * * * * * * * * * * * * * */
 /* Footer info styling */
+/* * * * * * * * * * * * * * * * */
 
 .instructions {
   margin: 2rem 0 0.5rem;

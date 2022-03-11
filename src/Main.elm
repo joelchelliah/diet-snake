@@ -20,7 +20,7 @@ viewTile snake pill isGameOver tile =
         makeTile className innerTile =
             case className of
                 "" ->
-                    div [ class "tile outer-tile" ] [ innerTile [] [] ]
+                    div [ class "outer-tile" ] [ innerTile [] [] ]
 
                 name ->
                     div [ class "tile outer-tile" ] [ innerTile [ class ("tile inner-tile " ++ name) ] [] ]
