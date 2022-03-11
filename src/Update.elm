@@ -7,19 +7,9 @@ import Random
 import Utils exposing (..)
 
 
-moveSnakeAndUpdateTrimming : Snake -> Snake
-moveSnakeAndUpdateTrimming snake =
+updateTrimmedParts : Snake -> Snake
+updateTrimmedParts ({ trimmed } as snake) =
     let
-        { head, tail, isGrowing, trimmed } =
-            snake
-
-        newTail =
-            if isGrowing then
-                head :: tail
-
-            else
-                head :: List.take (List.length tail - 1) tail
-
         -- Trim delay to ensure that css animation is finished running before removing
         trimDelay =
             10
@@ -30,6 +20,19 @@ moveSnakeAndUpdateTrimming snake =
 
             else
                 trimmed
+    in
+    { snake | trimmed = newTrimmed }
+
+
+moveSnake : Snake -> Snake
+moveSnake ({ head, tail, isGrowing } as snake) =
+    let
+        newTail =
+            if isGrowing then
+                head :: tail
+
+            else
+                head :: List.take (List.length tail - 1) tail
 
         updateFields newHead =
             { snake
@@ -37,7 +40,6 @@ moveSnakeAndUpdateTrimming snake =
                 , tail = newTail
                 , canGrow = True
                 , isGrowing = False
-                , trimmed = newTrimmed
             }
     in
     case snake.direction of
@@ -179,7 +181,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                         turnSnake direction snake
 
                     else
-                        moveSnakeAndUpdateTrimming snake |> turnSnake direction
+                        snake |> updateTrimmedParts |> moveSnake |> turnSnake direction
             in
             ( { model | snake = newSnake }, Cmd.none )
 
@@ -189,7 +191,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
         Tick ->
             let
                 newSnake =
-                    moveSnakeAndUpdateTrimming snake
+                    snake |> updateTrimmedParts |> moveSnake
 
                 toNewPillMsg ( pos, trim ) =
                     NewPillAndSnakeTrimming pos trim
