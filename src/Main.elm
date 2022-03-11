@@ -17,13 +17,16 @@ import Utils exposing (..)
 viewTile : Snake -> Pill -> Bool -> Tile -> Html Msg
 viewTile snake pill isGameOver tile =
     let
-        makeTile className inerTileContainer =
+        makeTile className innerTile =
             case className of
                 "" ->
-                    div [ class "tile outer-tile" ] [ inerTileContainer [] [] ]
+                    div [ class "tile outer-tile" ] [ innerTile [] [] ]
 
                 name ->
-                    div [ class "tile outer-tile" ] [ inerTileContainer [ class ("tile inner-tile " ++ name) ] [] ]
+                    div [ class "tile outer-tile" ] [ innerTile [ class ("tile inner-tile " ++ name) ] [] ]
+
+        fadeAwayDeadTiles tiles pos =
+            tiles |> getIndexInList pos |> fadeAway |> makeTile "snake-dead"
     in
     case tile of
         Wall ->
@@ -32,14 +35,14 @@ viewTile snake pill isGameOver tile =
         Open pos ->
             if snake.head == pos then
                 if isGameOver then
-                    makeTile "snake-dead" div
+                    fadeAwayDeadTiles [ pos ] pos
 
                 else
-                    makeTile "snake-head" pulse
+                    makeTile "snake-head" div
 
             else if isSnakeHere snake pos then
                 if isGameOver then
-                    makeTile "snake-dead" div
+                    fadeAwayDeadTiles snake.tail pos
 
                 else
                     makeTile "snake-body" div
@@ -47,8 +50,8 @@ viewTile snake pill isGameOver tile =
             else if isPillHere pill pos then
                 makeTile "pill" div
 
-            else if List.any (\trimmedPos -> pos == trimmedPos) snake.trimmed then
-                snake.trimmed |> getIndexInList pos |> fadeAndShrinkAway |> makeTile "snake-dead"
+            else if isTrimmedAwaySnakeHere snake pos then
+                fadeAwayDeadTiles snake.trimmed pos
 
             else
                 makeTile "" span

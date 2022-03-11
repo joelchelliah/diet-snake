@@ -18,6 +18,11 @@ isSnakeHere { head, tail } pos =
     List.any (\sPos -> sPos == pos) (head :: tail)
 
 
+isTrimmedAwaySnakeHere : Snake -> Position -> Bool
+isTrimmedAwaySnakeHere { trimmed } pos =
+    List.any (\sPos -> sPos == pos) trimmed
+
+
 isSnakeOnPill : Snake -> Pill -> Bool
 isSnakeOnPill { head } pill =
     isPillHere pill head
