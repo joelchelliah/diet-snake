@@ -71,7 +71,7 @@ viewTitle state =
     let
         subTitleText =
             if state == GameOver then
-                text "Ouch! ...Try again?"
+                text "Whoops! ..Maybe try another diet?"
 
             else
                 text "The totally backward snake game!"
