@@ -1,4 +1,4 @@
-import "./main.css";
+import "./main.scss";
 import { Elm } from "./Main.elm";
 
 const node = document.querySelector("#app div");
