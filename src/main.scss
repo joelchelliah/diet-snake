@@ -103,6 +103,7 @@ body {
 
 $tile-border: 2px;
 $tile-size: 16px;
+$row-height: $tile-size + $tile-border + $tile-border;
 
 %tile-base {
   border: $tile-border solid;
@@ -110,10 +111,10 @@ $tile-size: 16px;
   height: $tile-size;
 }
 
-@mixin colored-tile($color: #eef, $saturate: 50%) {
+@mixin colored-tile($color: #fff, $darken: -50%, $saturate: 50%) {
   @extend %tile-base;
   $lighter: color.scale($color, $lightness: 50%);
-  $darker: color.scale($color, $lightness: -20%);
+  $darker: color.scale($color, $lightness: $darken);
   $highlight: color.scale($lighter, $saturation: $saturate);
   $shading: color.scale($darker, $saturation: -50%);
   background-color: $color;
@@ -129,15 +130,13 @@ $tile-size: 16px;
 .row {
   display: flex;
   flex-direction: row;
-  height: 20px;
+  height: $row-height;
 }
 
-/* Used for open (non-wall) tiles,
- * and also as the background tile behind all other tiles.
- */
+/* Open (non-wall) tile, and the background tile behind all other tiles. */
 .outer-tile {
   display: inline-block;
-  @include colored-tile(#ddf);
+  @include colored-tile(#ddf, -20%);
 }
 
 .inner-tile {
@@ -147,7 +146,7 @@ $tile-size: 16px;
 }
 
 .wall {
-  @include colored-tile(#aaa, 0%);
+  @include colored-tile(#aaa, -60%, 0%);
 }
 
 .snake-head {
@@ -161,8 +160,8 @@ $tile-size: 16px;
   @include colored-tile(#753);
 }
 
-.pill {
-  @include colored-tile(#5a5);
+.pill-outer {
+  @include colored-tile(#5b5);
 }
 
 /* * * * * * * * * * * * * * * * */

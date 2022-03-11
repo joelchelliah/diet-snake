@@ -25,10 +25,13 @@ fadeAway index attributes msg =
 pulse : List (Attribute msg) -> List (Html msg) -> Html msg
 pulse attributes msg =
     let
-        pulseLoop =
-            Animation.fromTo
-                { duration = 200, options = [ Animation.loop ] }
-                [ P.scale 0.5 ]
-                [ P.scale 1 ]
+        pulseSteps =
+            Animation.steps
+                { startAt = [ P.scale 0.5, P.rotate 0 ], options = [ Animation.loop ] }
+                [ Animation.step 300 [ P.scale 1.15, P.rotate 15 ]
+                , Animation.step 200 [ P.scale 0.5, P.rotate 0 ]
+                , Animation.step 300 [ P.scale 1.15, P.rotate -15 ]
+                , Animation.step 200 [ P.scale 0.5, P.rotate 0 ]
+                ]
     in
-    Animated.div pulseLoop attributes msg
+    Animated.div pulseSteps attributes msg

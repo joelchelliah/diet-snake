@@ -23,7 +23,7 @@ viewTile snake pill isGameOver tile =
                     div [ class "outer-tile" ] [ innerTile [] [] ]
 
                 name ->
-                    div [ class "tile outer-tile" ] [ innerTile [ class ("tile inner-tile " ++ name) ] [] ]
+                    div [ class "outer-tile" ] [ innerTile [ class ("inner-tile " ++ name) ] [] ]
 
         fadeAwayDeadTiles tiles pos =
             tiles |> getIndexInList pos |> fadeAway |> makeTile "snake-dead"
@@ -48,7 +48,7 @@ viewTile snake pill isGameOver tile =
                     makeTile "snake-body" div
 
             else if isPillHere pill pos then
-                makeTile "pill" div
+                makeTile "pill-outer" pulse
 
             else if isTrimmedAwaySnakeHere snake pos then
                 fadeAwayDeadTiles snake.trimmed pos
