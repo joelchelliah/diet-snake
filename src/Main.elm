@@ -35,7 +35,7 @@ viewTile snake pill isGameOver tile =
                     makeTile "snake-dead" div
 
                 else
-                    makeTile "snake-head" div
+                    makeTile "snake-head" pulse
 
             else if isSnakeHere snake pos then
                 if isGameOver then

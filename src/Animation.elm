@@ -20,3 +20,19 @@ fadeAndShrinkAway index attributes msg =
                 [ P.rotate 180, P.opacity 0, P.scale 0 ]
     in
     Animated.div fadeAndShrink attributes msg
+
+
+pulse : List (Attribute msg) -> List (Html msg) -> Html msg
+pulse attributes msg =
+    let
+        pulseLoop =
+            Animation.steps
+                { startAt = [ P.scale 0.5 ]
+                , options = [ Animation.loop ]
+                }
+                [ Animation.step 100 [ P.scale 1 ]
+                , Animation.wait 10
+                , Animation.step 100 [ P.scale 0.5 ]
+                ]
+    in
+    Animated.div pulseLoop attributes msg
