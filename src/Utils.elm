@@ -56,3 +56,22 @@ getFreeTilePositions snakePositions map =
             getNonWallPositions map
     in
     List.filter (\pos -> not <| List.member pos snakePositions) nonWallPositions
+
+
+lookUpInList : Int -> List a -> Maybe a
+lookUpInList i list =
+    List.drop i list |> List.head
+
+
+getIndexInList : a -> List a -> Int
+getIndexInList a list =
+    case list of
+        head :: tail ->
+            if head == a then
+                0
+
+            else
+                1 + getIndexInList a tail
+
+        _ ->
+            0

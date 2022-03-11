@@ -7,21 +7,12 @@ import Random
 import Utils exposing (..)
 
 
-updateTrimmedParts : Snake -> Snake
-updateTrimmedParts ({ trimmed } as snake) =
-    let
-        -- Trim delay to ensure that css animation is finished running before removing
-        trimDelay =
-            10
-
-        newTrimmed =
-            if List.length trimmed > trimDelay then
-                List.drop 1 trimmed
-
-            else
-                trimmed
-    in
-    { snake | trimmed = newTrimmed }
+growSnake : Stats -> Snake -> Snake
+growSnake { stepsTaken } snake =
+    { snake
+        | canGrow = stepsTaken > 10
+        , isGrowing = snake.canGrow
+    }
 
 
 moveSnake : Snake -> Snake
@@ -38,7 +29,6 @@ moveSnake ({ head, tail, isGrowing } as snake) =
             { snake
                 | head = newHead
                 , tail = newTail
-                , canGrow = True
                 , isGrowing = False
             }
     in
@@ -77,14 +67,14 @@ turnSnake direction snake =
 
 
 trimSnake : Snake -> Int -> Snake
-trimSnake ({ tail, trimmed } as snake) trim =
+trimSnake ({ tail } as snake) trim =
     let
         numKept =
             List.length tail - trim
     in
     { snake
         | tail = List.take numKept tail
-        , trimmed = List.drop numKept tail |> List.reverse |> List.append trimmed
+        , trimmed = tail |> List.drop numKept |> List.reverse
     }
 
 
@@ -94,8 +84,8 @@ trimSnake ({ tail, trimmed } as snake) trim =
 -- Checking for this case here:
 
 
-isSnakePositionInSyncWithDirection : Snake -> Bool
-isSnakePositionInSyncWithDirection snake =
+isSnakePositionInSyncWithSnakeDirection : Snake -> Bool
+isSnakePositionInSyncWithSnakeDirection snake =
     let
         ( headX, headY ) =
             snake.head
@@ -151,25 +141,18 @@ getBestStats { stats, bestStats } =
     { bestStats | weightLoss = newWeightLoss, stepsTaken = newStepsTaken, pillsTaken = newPillsTaken }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ snake, state, pill, map, stats, bestStats } as model) =
-    let
-        isPaused =
-            state == Paused || state == Init
-
-        isDead =
-            state == GameOver
-    in
+updateWhileActive : Msg -> Model -> ( Model, Cmd Msg )
+updateWhileActive msg ({ snake, state, pill, map, stats, bestStats } as model) =
     case msg of
         StartGame ->
             init bestStats ()
 
         Enter ->
-            if isPaused then
+            if state == Paused || state == Init then
                 ( { model | state = Running }, Cmd.none )
 
-            else if isDead then
-                update StartGame model
+            else if state == GameOver then
+                updateWhileActive StartGame model
 
             else
                 ( { model | state = Paused }, Cmd.none )
@@ -177,21 +160,21 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
         KeyPress direction ->
             let
                 newSnake =
-                    if isSnakePositionInSyncWithDirection snake then
+                    if isSnakePositionInSyncWithSnakeDirection snake then
                         turnSnake direction snake
 
                     else
-                        snake |> updateTrimmedParts |> moveSnake |> turnSnake direction
+                        snake |> moveSnake |> turnSnake direction
             in
             ( { model | snake = newSnake }, Cmd.none )
 
         Grow ->
-            ( { model | snake = { snake | isGrowing = snake.canGrow } }, Cmd.none )
+            ( { model | snake = growSnake stats snake }, Cmd.none )
 
         Tick ->
             let
                 newSnake =
-                    snake |> updateTrimmedParts |> moveSnake
+                    moveSnake snake
 
                 toNewPillMsg ( pos, trim ) =
                     NewPillAndSnakeTrimming pos trim
@@ -213,10 +196,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                     else
                         Cmd.none
             in
-            if isPaused then
-                ( model, Cmd.none )
-
-            else if isSnakeOnFreeTile newSnake map then
+            if isSnakeOnFreeTile newSnake map then
                 ( { model | snake = newSnake, stats = newStats }, newCommand )
 
             else
@@ -231,3 +211,16 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                     { stats | weightLoss = stats.weightLoss + trim }
             in
             ( { model | pill = Just pos, snake = newSnake, stats = newStats }, Cmd.none )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg ({ state } as model) =
+    let
+        isInactive =
+            List.member state [ Init, Paused, GameOver ]
+    in
+    if isInactive && msg /= Enter then
+        ( model, Cmd.none )
+
+    else
+        updateWhileActive msg model

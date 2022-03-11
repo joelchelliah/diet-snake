@@ -15,7 +15,7 @@ pillPositionGenerator { head, tail } map =
             Random.int 0 (List.length freePositions - 1)
 
         lookUpPosition i =
-            case List.drop i freePositions |> List.head of
+            case lookUpInList i freePositions of
                 -- Never occurs since lookUp is always successful
                 Nothing ->
                     ( 1, 1 )

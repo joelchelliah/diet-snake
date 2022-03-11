@@ -9,7 +9,6 @@ import Html.Events exposing (..)
 import Icon exposing (..)
 import Json.Decode as Decode
 import Model exposing (..)
-import Simple.Animation.Animated exposing (ClassName)
 import Time
 import Update exposing (update)
 import Utils exposing (..)
@@ -48,8 +47,8 @@ viewTile snake pill isGameOver tile =
             else if isPillHere pill pos then
                 makeTile "pill" div
 
-            else if List.any (\dis -> pos == dis) snake.trimmed then
-                makeTile "snake-dead" fadeAndShrinkAway
+            else if List.any (\trimmedPos -> pos == trimmedPos) snake.trimmed then
+                snake.trimmed |> getIndexInList pos |> fadeAndShrinkAway |> makeTile "snake-dead"
 
             else
                 makeTile "" span
