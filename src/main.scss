@@ -1,7 +1,12 @@
 @use "sass:color";
 
+$default-font: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+$monospace-font: 'Monaco', 'Fira Mono', 'DejaVu Sans Mono', 'Menlo', monospace;
+
+$divider-color: #DDD;
+
 body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  font-family: $default-font;
   font-size: 1rem;
   margin: 0 auto;
   text-align: center;
@@ -9,15 +14,16 @@ body {
   width: 40rem;
 }
 
+
 /* * * * * * * * * * * * * * * * */
-/* Titles and scoreboard styling */
+/* Titles styling */
 /* * * * * * * * * * * * * * * * */
 
 .header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-bottom: solid 1px #DDD;
+  border-bottom: solid 1px $divider-color;
   width: 100%;
   justify-content: center;
   margin-bottom: 1rem;
@@ -45,22 +51,10 @@ body {
   font-style: italic;
 }
 
-.scoreboard-row {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-}
-
-.scoreboard {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.875rem;
-}
 
 /* * * * * * * * * * * * * * * * */
 /* Info modal styling */
+/* * * * * * * * * * * * * * * * */
 
 .modal {
   position: absolute;
@@ -95,6 +89,14 @@ body {
   font-size: 0.875rem;
   margin-bottom: 1rem;
 }
+
+.arrow-icons {
+  margin: 0.5rem 0;
+}
+.arrow-icon {
+  margin: 0 0.25rem;
+}
+
 
 /* * * * * * * * * * * * * * * * */
 /* Map and snake styling */
@@ -163,21 +165,43 @@ $row-height: $tile-size + $tile-border + $tile-border;
   @include colored-tile(#5b5);
 }
 
+
+/* * * * * * * * * * * * * * * * */
+/* Scoreboard styling */
+/* * * * * * * * * * * * * * * * */
+
+.scoreboards {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  font-family: $monospace-font;
+}
+
+.scoreboard-divider {
+  width: 1px;
+  height: inherit;
+  background-color: $divider-color;
+}
+
+.scoreboard {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+
+  .score {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: 15rem;
+  }
+}
+
+
 /* * * * * * * * * * * * * * * * */
 /* Footer info styling */
 /* * * * * * * * * * * * * * * * */
-
-.instructions {
-  margin: 2rem 0 0.5rem;
-  width: 100%;
-}
-
-.arrow-icons {
-  margin: 0.5rem 0;
-}
-.arrow-icon {
-  margin: 0 0.25rem;
-}
 
 .github {
   display: flex;
@@ -186,6 +210,6 @@ $row-height: $tile-size + $tile-border + $tile-border;
   align-items: center;
   justify-content: center;
   font-size: 0.875rem;
-  padding-top: 1rem;
-  border-top: solid 1px #ddd;
+  padding-top: 1.5rem;
+  border-top: solid 1px $divider-color;
 }

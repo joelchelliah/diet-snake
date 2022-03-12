@@ -97,22 +97,6 @@ viewTitle state =
         ]
 
 
-viewScoreBoard : Model -> Html Msg
-viewScoreBoard { stats, bestStats } =
-    div [ class "scoreboard-row" ]
-        [ div [ class "scoreboard", style "align-items" "flex-start" ]
-            [ div [] [ text ("Steps taken: " ++ String.fromInt stats.stepsTaken) ]
-            , div [] [ text ("Pills consumed: " ++ String.fromInt stats.pillsTaken) ]
-            , div [] [ text ("Weight lost: " ++ String.fromInt stats.weightLoss) ]
-            ]
-        , div [ class "scoreboard", style "align-items" "flex-end" ]
-            [ div [] [ text ("Most steps taken: " ++ String.fromInt bestStats.stepsTaken) ]
-            , div [] [ text ("Most pills consumed: " ++ String.fromInt bestStats.pillsTaken) ]
-            , div [] [ text ("Most weight lost: " ++ String.fromInt bestStats.weightLoss) ]
-            ]
-        ]
-
-
 viewPressEnterTo : String -> Html Msg
 viewPressEnterTo reason =
     div []
@@ -154,6 +138,34 @@ viewModal { state } =
             span [] []
 
 
+viewScoreBoards : Model -> Html Msg
+viewScoreBoards { stats, bestStats } =
+    let
+        viewScore ( key, val, postfix ) =
+            div [ class "score" ] [ div [] [ text (key ++ ":") ], div [] [ text (String.fromInt val ++ " " ++ postfix) ] ]
+
+        viewScores scores =
+            List.map viewScore scores
+    in
+    div [ class "scoreboards" ]
+        [ div [ class "scoreboard", style "align-items" "flex-start" ]
+            (viewScores
+                [ ( "Distance covered", stats.stepsTaken, "cm" )
+                , ( "Pills taken", stats.pillsTaken, "mg" )
+                , ( "Weight lost", stats.weightLoss, "kg" )
+                ]
+            )
+        , div [ class "scoreboard-divider" ] []
+        , div [ class "scoreboard", style "align-items" "flex-end" ]
+            (viewScores
+                [ ( "Longest distance", bestStats.stepsTaken, "cm " )
+                , ( "Most pills taken", bestStats.pillsTaken, "mg" )
+                , ( "Maximum weightloss", bestStats.weightLoss, "kg" )
+                ]
+            )
+        ]
+
+
 viewGithub : Html Msg
 viewGithub =
     let
@@ -171,7 +183,7 @@ view model =
         [ iconCss
         , viewTitle model.state
         , viewMap model
-        , viewScoreBoard model
+        , viewScoreBoards model
         , viewModal model
         , viewGithub
         ]
