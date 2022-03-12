@@ -26,9 +26,19 @@ pillPositionGenerator { head, tail } map =
     Random.map lookUpPosition indexGenerator
 
 
-trimmingGenerator : Random.Generator Int
-trimmingGenerator =
-    Random.int 4 8
+trimmingGenerator : Snake -> Random.Generator Int
+trimmingGenerator snake =
+    let
+        tailLength =
+            List.length snake.tail
+
+        min =
+            tailLength // 8
+
+        max =
+            tailLength // 4
+    in
+    Random.int (clamp 2 max min) (clamp min 10 max)
 
 
 positionAndTrimmingGenerator : Snake -> Map -> Bool -> Random.Generator ( Position, Int )
@@ -44,4 +54,7 @@ positionAndTrimmingGenerator snake map omitTrimming =
         Random.map withoutTrimming (pillPositionGenerator snake map)
 
     else
-        Random.map2 withTrimming (pillPositionGenerator snake map) trimmingGenerator
+        Random.map2
+            withTrimming
+            (pillPositionGenerator snake map)
+            (trimmingGenerator snake)

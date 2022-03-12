@@ -28,10 +28,10 @@ pulse attributes msg =
         pulseSteps =
             Animation.steps
                 { startAt = [ P.scale 0.5, P.rotate 0 ], options = [ Animation.loop ] }
-                [ Animation.step 300 [ P.scale 1.15, P.rotate 15 ]
-                , Animation.step 200 [ P.scale 0.5, P.rotate 0 ]
-                , Animation.step 300 [ P.scale 1.15, P.rotate -15 ]
-                , Animation.step 200 [ P.scale 0.5, P.rotate 0 ]
+                [ Animation.step 500 [ P.scale 1, P.rotate 15 ]
+                , Animation.step 300 [ P.scale 0.5, P.rotate 0 ]
+                , Animation.step 500 [ P.scale 1, P.rotate -15 ]
+                , Animation.step 300 [ P.scale 0.5, P.rotate 0 ]
                 ]
     in
     Animated.div pulseSteps attributes msg

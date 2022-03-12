@@ -63,7 +63,7 @@ viewMap { snake, pill, map, state } =
         viewRow row =
             div [ class "row" ] (List.map (viewTile snake pill (state == GameOver)) row)
     in
-    div [ class "map" ] (List.map viewRow map)
+    div [] (List.map viewRow map)
 
 
 viewTitle : GameState -> Html Msg
@@ -209,7 +209,7 @@ subscriptions model =
         Running ->
             Sub.batch
                 [ Time.every 100 (\_ -> Tick)
-                , Time.every 300 (\_ -> Grow)
+                , Time.every 200 (\_ -> Grow)
                 , keyDownSubscription
                 ]
 

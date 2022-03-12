@@ -10,7 +10,7 @@ import Utils exposing (..)
 growSnake : Stats -> Snake -> Snake
 growSnake { stepsTaken } snake =
     { snake
-        | canGrow = stepsTaken > 10
+        | canGrow = stepsTaken >= config.growthStartAt
         , isGrowing = snake.canGrow
     }
 

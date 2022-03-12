@@ -72,21 +72,19 @@ type Msg
     | NewPillAndSnakeTrimming Position Int
 
 
-gameWidth : number
-gameWidth =
-    32
-
-
-gameHeight : number
-gameHeight =
-    24
+config : { gameWidth : number, gameHeight : number, growthStartAt : number }
+config =
+    { gameWidth = 32
+    , gameHeight = 24
+    , growthStartAt = 10
+    }
 
 
 initSnake : Int -> Snake
 initSnake maxLength =
     let
         head =
-            ( gameWidth // 2, gameHeight // 2 )
+            ( config.gameWidth // 2, config.gameHeight // 2 )
 
         createTail length =
             if length == maxLength then
@@ -133,7 +131,7 @@ init bestStats () =
     ( { snake = initSnake 5
       , pill = Nothing
       , state = Init
-      , map = initMap gameWidth gameHeight
+      , map = initMap config.gameWidth config.gameHeight
       , stats = initStats
       , bestStats = bestStats
       }
