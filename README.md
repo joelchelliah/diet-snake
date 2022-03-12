@@ -2,9 +2,15 @@
 >*The totally backward snake game!*
 
 
-## Oh no!
-Mr. Snake is growing too fast! Help him lose weight by guiding him towards his diet supplements, and ensure that he lives a long and prosperous life.
+### 💊 Oh no!
+Mr. Snake is growing too fast!
+
+Help him lose weight by taking his diet pills, and ensure that he lives a long and prosperous life.
+
+### 🎮 Start his diet now
+https://diet-snake.netlify.app/
 
 
-### W.I.P
-Coming soon...
+---
+
+![screenshot of the hungry snake](/public/screenshot.png)
