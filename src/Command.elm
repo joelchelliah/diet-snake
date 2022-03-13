@@ -38,7 +38,7 @@ trimmingGenerator snake =
         max =
             tailLength // 4
     in
-    Random.int (clamp 2 max min) (clamp min 10 max)
+    Random.int (clamp 2 max min) (clamp min 12 max)
 
 
 getNewPillAndTrimCommand : Snake -> Pill -> Map -> Cmd Msg
