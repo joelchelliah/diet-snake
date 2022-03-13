@@ -71,20 +71,54 @@ body {
 /* * * * * * * * * * * * * * * * */
 
 @mixin box-shadow($x-axis, $y-axis, $blur, $color) {
-    -webkit-box-shadow: $x-axis $y-axis $blur $color;
-    -moz-box-shadow: $x-axis $y-axis $blur $color;
-    box-shadow: $x-axis $y-axis $blur $color;
+  -webkit-box-shadow: $x-axis $y-axis $blur $color;
+  -moz-box-shadow: $x-axis $y-axis $blur $color;
+  box-shadow: $x-axis $y-axis $blur $color;
+}
+
+@mixin corner-icon($up, $left) {
+  position: absolute;
+  @if $up {
+    top: 0.25rem;
+  } @else {
+    bottom: 0.25rem;
+  }
+  @if $left {
+    left: 0.5rem;
+  } @else {
+    right: 0.5rem;
+  }
+
 }
 
 .modal {
   @include box-shadow(0.25rem, 0.5rem, 1.5rem, #000);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   position: absolute;
   top: 15rem;
   background-color: #fff;
   padding: 1rem;
   border: 1px solid #555;
-  min-width: 10rem;
-  max-width: 26rem;
+  min-width: 14rem;
+  max-width: 24rem;
+
+  .icon-up-left {
+    @include corner-icon(true, true);
+  }
+
+  .icon-up-right {
+    @include corner-icon(true, false);
+  }
+
+  .icon-down-left {
+    @include corner-icon(false, true);
+  }
+
+  .icon-down-right {
+    @include corner-icon(false, false);
+  }
 
   .title {
     font-weight: 800;
@@ -96,14 +130,16 @@ body {
     font-size: 0.875rem;
     margin-bottom: 1rem;
   }
+
+  .arrow-icons {
+    margin: 0.5rem 0;
+  }
+  .arrow-icon {
+    margin: 0 0.25rem;
+  }
 }
 
-.arrow-icons {
-  margin: 0.5rem 0;
-}
-.arrow-icon {
-  margin: 0 0.25rem;
-}
+
 
 
 /* * * * * * * * * * * * * * * * */

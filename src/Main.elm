@@ -110,15 +110,15 @@ viewModal : Model -> Html Msg
 viewModal { state } =
     case state of
         Init ->
-            growAppear 2.2
+            growAppear 2.4
                 [ class "modal" ]
-                [ div [ class "title" ] [ text "- Oh no -" ]
+                [ cookieIcons
+                , div [ class "title" ] [ text "- Oh no -" ]
                 , div [ class "text" ]
                     [ p [] [ text "Mr. Snake is growing too fast!" ]
                     , p [] [ text "Help him lose weight by taking his diet pills, and ensure that he lives a long and prosperous life." ]
                     , arrowIcons
                     , text "Move around using the arrow keys."
-                    , br [] []
                     ]
                 , viewPressEnterTo "start the diet!"
                 ]
@@ -126,14 +126,16 @@ viewModal { state } =
         Paused ->
             growAppear 1.2
                 [ class "modal" ]
-                [ div [ class "title" ] [ text "- Paused -" ]
+                [ pauseIcons
+                , div [ class "title" ] [ text "- Paused -" ]
                 , viewPressEnterTo "resume your diet."
                 ]
 
         GameOver ->
-            growAppear 1.8
+            growAppear 2.0
                 [ class "modal" ]
-                [ div [ class "title red-text" ] [ text "- Snake is dead -" ]
+                [ skullIcons
+                , div [ class "title red-text" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "start a new diet."
                 ]
 

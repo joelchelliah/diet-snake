@@ -51,7 +51,7 @@ growAppear spin =
 
         grow =
             Animation.fromTo
-                { duration = duration, options = [ Animation.easeOutCubic ] }
+                { duration = duration, options = [ Animation.easeOutQuint ] }
                 [ P.rotate windup, P.opacity 0, P.scale 0 ]
                 [ P.rotate 0, P.opacity 1, P.scale 1 ]
     in
