@@ -2,14 +2,12 @@ module Main exposing (..)
 
 import Animation exposing (..)
 import Browser
-import Browser.Events exposing (onKeyDown)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Icon exposing (..)
-import Json.Decode as Decode
 import Model exposing (..)
-import Time
+import Subscription exposing (subscriptions)
 import Update exposing (update)
 import Utils exposing (..)
 
@@ -192,46 +190,6 @@ view model =
         , viewModal model
         , viewGithub
         ]
-
-
-keyToMsg : String -> Msg
-keyToMsg string =
-    case string of
-        "ArrowUp" ->
-            KeyPress Up
-
-        "ArrowRight" ->
-            KeyPress Right
-
-        "ArrowDown" ->
-            KeyPress Down
-
-        "ArrowLeft" ->
-            KeyPress Left
-
-        "Enter" ->
-            Enter
-
-        _ ->
-            Tick
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    let
-        keyDownSubscription =
-            onKeyDown <| Decode.map keyToMsg <| Decode.field "key" Decode.string
-    in
-    case model.state of
-        Running ->
-            Sub.batch
-                [ Time.every 100 (\_ -> Tick)
-                , Time.every 200 (\_ -> Grow)
-                , keyDownSubscription
-                ]
-
-        _ ->
-            keyDownSubscription
 
 
 main : Program () Model Msg
