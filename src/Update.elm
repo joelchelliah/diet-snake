@@ -1,9 +1,7 @@
 module Update exposing (update)
 
-import Generator exposing (..)
-import List exposing (tail)
+import Command exposing (getNewPillAndTrimCommand)
 import Model exposing (..)
-import Random
 import Utils exposing (..)
 
 
@@ -25,7 +23,7 @@ moveSnake ({ head, tail, isGrowing } as snake) =
             else
                 head :: List.take (List.length tail - 1) tail
 
-        updateFields newHead =
+        updateWithHead newHead =
             { snake
                 | head = newHead
                 , tail = newTail
@@ -34,16 +32,16 @@ moveSnake ({ head, tail, isGrowing } as snake) =
     in
     case snake.direction of
         Up ->
-            Tuple.mapSecond (\v -> v - 1) head |> updateFields
+            Tuple.mapSecond (\v -> v - 1) head |> updateWithHead
 
         Down ->
-            Tuple.mapSecond (\v -> v + 1) head |> updateFields
+            Tuple.mapSecond (\v -> v + 1) head |> updateWithHead
 
         Left ->
-            Tuple.mapFirst (\v -> v - 1) head |> updateFields
+            Tuple.mapFirst (\v -> v - 1) head |> updateWithHead
 
         Right ->
-            Tuple.mapFirst (\v -> v + 1) head |> updateFields
+            Tuple.mapFirst (\v -> v + 1) head |> updateWithHead
 
 
 turnSnake : Direction -> Snake -> Snake
@@ -76,42 +74,6 @@ trimSnake ({ tail } as snake) trim =
         | tail = List.take numKept tail
         , trimmed = tail |> List.drop numKept |> List.reverse
     }
-
-
-
--- When directions are given too quickly, the snake's direction may change twice before position is updated.
--- This can lead to moving the snake in an invalid direction. E.g: Up -> Left -> Down, while the snake is still facing up.
--- Checking for this case here:
-
-
-isSnakePositionInSyncWithSnakeDirection : Snake -> Bool
-isSnakePositionInSyncWithSnakeDirection snake =
-    let
-        ( headX, headY ) =
-            snake.head
-
-        prevSelectedDirection =
-            snake.direction
-
-        prevMovedDirection =
-            case List.head snake.tail of
-                Nothing ->
-                    prevSelectedDirection
-
-                Just ( tailX, tailY ) ->
-                    if headX > tailX then
-                        Right
-
-                    else if headY > tailY then
-                        Down
-
-                    else if headY < tailY then
-                        Up
-
-                    else
-                        Left
-    in
-    prevSelectedDirection == prevMovedDirection
 
 
 getBestStats : Model -> Stats
@@ -176,41 +138,31 @@ updateWhileActive msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 newSnake =
                     moveSnake snake
 
-                toNewPillMsg ( pos, trim ) =
-                    NewPillAndSnakeTrimming pos trim
-
                 newStats =
                     if isSnakeOnPill newSnake pill then
                         { stats | stepsTaken = stats.stepsTaken + 1, pillsTaken = stats.pillsTaken + 1 }
 
                     else
                         { stats | stepsTaken = stats.stepsTaken + 1 }
-
-                newCommand =
-                    if isSnakeOnPill newSnake pill then
-                        Random.generate toNewPillMsg (positionAndTrimmingGenerator newSnake map False)
-
-                    else if pill == Nothing then
-                        Random.generate toNewPillMsg (positionAndTrimmingGenerator newSnake map True)
-
-                    else
-                        Cmd.none
             in
             if isSnakeOnFreeTile newSnake map then
-                ( { model | snake = newSnake, stats = newStats }, newCommand )
+                ( { model | snake = newSnake, stats = newStats }
+                , getNewPillAndTrimCommand newSnake pill map
+                )
 
             else
                 ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
 
-        NewPillAndSnakeTrimming pos trim ->
-            let
-                newSnake =
-                    trimSnake snake trim
+        NewPill pos ->
+            ( { model | pill = Just pos }, Cmd.none )
 
-                newStats =
-                    { stats | weightLoss = stats.weightLoss + trim }
-            in
-            ( { model | pill = Just pos, snake = newSnake, stats = newStats }, Cmd.none )
+        Trim amount ->
+            ( { model
+                | snake = trimSnake snake amount
+                , stats = { stats | weightLoss = stats.weightLoss + amount }
+              }
+            , Cmd.none
+            )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

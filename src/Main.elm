@@ -48,7 +48,7 @@ viewTile snake pill isGameOver tile =
                     makeTile "snake-body" div
 
             else if isPillHere pill pos then
-                makeTile "pill-outer" pulse
+                makeTile "pill" pulse
 
             else if isTrimmedAwaySnakeHere snake pos then
                 fadeAwayDeadTiles snake.trimmed pos

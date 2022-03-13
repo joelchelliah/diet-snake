@@ -1,4 +1,4 @@
-module Generator exposing (..)
+module Command exposing (getNewPillAndTrimCommand)
 
 import Model exposing (..)
 import Random
@@ -58,3 +58,22 @@ positionAndTrimmingGenerator snake map omitTrimming =
             withTrimming
             (pillPositionGenerator snake map)
             (trimmingGenerator snake)
+
+
+getNewPillAndTrimCommand : Snake -> Pill -> Map -> Cmd Msg
+getNewPillAndTrimCommand snake pill map =
+    let
+        newPillCmd =
+            Random.generate NewPill (pillPositionGenerator snake map)
+
+        trimCmd =
+            Random.generate Trim (trimmingGenerator snake)
+    in
+    if isSnakeOnPill snake pill then
+        Cmd.batch [ newPillCmd, trimCmd ]
+
+    else if pill == Nothing then
+        newPillCmd
+
+    else
+        Cmd.none

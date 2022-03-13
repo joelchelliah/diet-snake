@@ -161,7 +161,7 @@ $row-height: $tile-size + $tile-border + $tile-border;
   @include colored-tile(#753);
 }
 
-.pill-outer {
+.pill {
   @include colored-tile(#5b5);
 }
 

@@ -37,6 +37,42 @@ isSnakeOnFreeTile { head, tail } map =
     getFreeTilePositions tail map |> List.any isHeadOn
 
 
+
+-- When directions are given too quickly, the snake's direction may change twice before position is updated.
+-- This can lead to moving the snake in an invalid direction. E.g: Up -> Left -> Down, while the snake is still facing up.
+-- Checking for this case here:
+
+
+isSnakePositionInSyncWithSnakeDirection : Snake -> Bool
+isSnakePositionInSyncWithSnakeDirection snake =
+    let
+        ( headX, headY ) =
+            snake.head
+
+        prevSelectedDirection =
+            snake.direction
+
+        prevMovedDirection =
+            case List.head snake.tail of
+                Nothing ->
+                    prevSelectedDirection
+
+                Just ( tailX, tailY ) ->
+                    if headX > tailX then
+                        Right
+
+                    else if headY > tailY then
+                        Down
+
+                    else if headY < tailY then
+                        Up
+
+                    else
+                        Left
+    in
+    prevSelectedDirection == prevMovedDirection
+
+
 getNonWallPositions : Map -> List Position
 getNonWallPositions =
     let
@@ -55,12 +91,12 @@ getNonWallPositions =
 
 
 getFreeTilePositions : List Position -> Map -> List Position
-getFreeTilePositions snakePositions map =
+getFreeTilePositions nonFreePositions map =
     let
         nonWallPositions =
             getNonWallPositions map
     in
-    List.filter (\pos -> not <| List.member pos snakePositions) nonWallPositions
+    List.filter (\pos -> not <| List.member pos nonFreePositions) nonWallPositions
 
 
 lookUpInList : Int -> List a -> Maybe a

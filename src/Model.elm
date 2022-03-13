@@ -69,7 +69,8 @@ type Msg
     | Enter
     | Tick
     | Grow
-    | NewPillAndSnakeTrimming Position Int
+    | NewPill Position
+    | Trim Int
 
 
 config : { gameWidth : number, gameHeight : number, growthStartAt : number }

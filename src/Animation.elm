@@ -11,7 +11,7 @@ fadeAway : Int -> List (Attribute msg) -> List (Html msg) -> Html msg
 fadeAway index attributes msg =
     let
         delayInMillis =
-            150 * index
+            100 * index
 
         fade =
             Animation.fromTo
