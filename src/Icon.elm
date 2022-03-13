@@ -11,23 +11,28 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
+topCorners : List String
+topCorners =
+    [ "up-left", "up-right" ]
+
+
+bottomCorners : List String
+bottomCorners =
+    [ "down-left", "down-right" ]
+
+
 allCorners : List String
 allCorners =
-    [ "icon-up-left", "icon-up-right", "icon-down-left", "icon-down-right" ]
+    List.append topCorners bottomCorners
 
 
-onlyTopCorners : List String
-onlyTopCorners =
-    [ "icon-up-left", "icon-up-right" ]
-
-
-repeatIconPerClass : Icon -> List String -> Html msg
-repeatIconPerClass icon classes =
+repeatIconPerCorner : Icon -> List String -> Html msg
+repeatIconPerCorner icon corners =
     let
         html =
             icon |> Icon.present |> Icon.styled [ Icon.sm ] |> Icon.view
     in
-    span [] (List.map (\name -> div [ class name ] [ html ]) classes)
+    span [ class "corner-icons" ] (List.map (\name -> div [ class name ] [ html ]) corners)
 
 
 iconCss : Html msg
@@ -37,17 +42,17 @@ iconCss =
 
 cookieIcons : Html msg
 cookieIcons =
-    repeatIconPerClass Icon.cookieBite allCorners
+    repeatIconPerCorner Icon.cookieBite allCorners
 
 
 pauseIcons : Html msg
 pauseIcons =
-    repeatIconPerClass Icon.pause onlyTopCorners
+    repeatIconPerCorner Icon.pause topCorners
 
 
 skullIcons : Html msg
 skullIcons =
-    repeatIconPerClass Icon.skull onlyTopCorners
+    repeatIconPerCorner Icon.skull topCorners
 
 
 arrowIcons : Html msg
@@ -65,4 +70,4 @@ arrowIcons =
 
 githubIcon : Html msg
 githubIcon =
-    Icon.githubSquare |> Icon.present |> Icon.styled [ Icon.lg, Icon.pullLeft ] |> Icon.view
+    Icon.github |> Icon.present |> Icon.styled [ Icon.fa2x, Icon.pullLeft ] |> Icon.view

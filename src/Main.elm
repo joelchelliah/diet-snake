@@ -67,12 +67,8 @@ viewMap { snake, pill, map, state } =
 viewHeader : GameState -> Html Msg
 viewHeader state =
     let
-        subTitleText =
-            if state == GameOver then
-                text "Whoops! ..Maybe try another diet?"
-
-            else
-                text "The totally backward snake game!"
+        iconContainer =
+            flipAround (state == GameOver)
 
         titleText =
             if state == GameOver then
@@ -85,9 +81,16 @@ viewHeader state =
 
             else
                 span [ class "blue-text" ] [ text "Diet Snake" ]
+
+        subTitleText =
+            if state == GameOver then
+                text "Whoops! ..Maybe try another diet?"
+
+            else
+                text "The totally backward snake game!"
     in
     div [ class "header" ]
-        [ div [ class "icon" ] [ text "🐍" ]
+        [ iconContainer [ class "icon" ] [ text "🐍" ]
         , div [ class "titles" ]
             [ div [ class "title" ] [ titleText ]
             , div [ class "subtitle" ] [ subTitleText ]
@@ -133,7 +136,7 @@ viewModal { state } =
             growAppear 2.0
                 [ class "modal" ]
                 [ skullIcons
-                , div [ class "title red-text" ] [ text "- Snake is dead -" ]
+                , div [ class "title red" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "start a new diet."
                 ]
 

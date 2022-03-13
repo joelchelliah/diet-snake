@@ -104,26 +104,34 @@ body {
   min-width: 14rem;
   max-width: 24rem;
 
-  .icon-up-left {
-    @include corner-icon(true, true);
-  }
+  .corner-icons {
+    color: #777;
 
-  .icon-up-right {
-    @include corner-icon(true, false);
-  }
+    .up-left {
+      @include corner-icon(true, true);
+    }
 
-  .icon-down-left {
-    @include corner-icon(false, true);
-  }
+    .up-right {
+      @include corner-icon(true, false);
+    }
 
-  .icon-down-right {
-    @include corner-icon(false, false);
+    .down-left {
+      @include corner-icon(false, true);
+    }
+
+    .down-right {
+      @include corner-icon(false, false);
+    }
   }
 
   .title {
     font-weight: 800;
     color: #55c;
     margin-bottom: 0.5rem;
+
+    &.red {
+      @extend .red-text;
+    }
   }
 
   .text {
