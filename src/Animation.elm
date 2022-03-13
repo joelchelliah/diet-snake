@@ -47,7 +47,7 @@ growAppear spin =
             0 - degrees
 
         duration =
-            round (500 * degrees / 360)
+            round (450 * degrees / 360)
 
         grow =
             Animation.fromTo

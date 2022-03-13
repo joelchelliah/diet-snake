@@ -66,8 +66,8 @@ viewMap { snake, pill, map, state } =
     div [] (List.map viewRow map)
 
 
-viewTitle : GameState -> Html Msg
-viewTitle state =
+viewHeader : GameState -> Html Msg
+viewHeader state =
     let
         subTitleText =
             if state == GameOver then
@@ -89,10 +89,10 @@ viewTitle state =
                 span [ class "blue-text" ] [ text "Diet Snake" ]
     in
     div [ class "header" ]
-        [ div [ class "header-icon" ] [ text "🐍" ]
-        , div [ class "header-texts" ]
-            [ div [ class "header-texts-title" ] [ titleText ]
-            , div [ class "header-texts-subtitle" ] [ subTitleText ]
+        [ div [ class "icon" ] [ text "🐍" ]
+        , div [ class "titles" ]
+            [ div [ class "title" ] [ titleText ]
+            , div [ class "subtitle" ] [ subTitleText ]
             ]
         ]
 
@@ -110,7 +110,7 @@ viewModal : Model -> Html Msg
 viewModal { state } =
     case state of
         Init ->
-            growAppear 2
+            growAppear 2.2
                 [ class "modal" ]
                 [ div [ class "title" ] [ text "- Oh no -" ]
                 , div [ class "text" ]
@@ -124,14 +124,14 @@ viewModal { state } =
                 ]
 
         Paused ->
-            growAppear 1
+            growAppear 1.2
                 [ class "modal" ]
                 [ div [ class "title" ] [ text "- Paused -" ]
                 , viewPressEnterTo "resume your diet."
                 ]
 
         GameOver ->
-            growAppear 1
+            growAppear 1.8
                 [ class "modal" ]
                 [ div [ class "title red-text" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "start a new diet."
@@ -184,7 +184,7 @@ view : Model -> Html Msg
 view model =
     div [ class "game" ]
         [ iconCss
-        , viewTitle model.state
+        , viewHeader model.state
         , viewMap model
         , viewScoreBoards model
         , viewModal model

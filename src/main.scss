@@ -23,12 +23,12 @@ body {
 }
 
 .grey-text {
-  color: #AAA;
+  color: #999;
 }
 
 
 /* * * * * * * * * * * * * * * * */
-/* Titles styling */
+/* Header styling */
 /* * * * * * * * * * * * * * * * */
 
 .header {
@@ -39,29 +39,31 @@ body {
   width: 100%;
   justify-content: center;
   margin-bottom: 1rem;
+
+  .icon {
+    font-size: 4rem;
+    margin: 0 1rem 0 4rem;
+  }
+
+  .titles {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 16rem;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    @extend .grey-text;
+    display: flex;
+    font-size: 1rem;
+    font-style: italic;
+  }
 }
 
-.header-icon {
-  font-size: 4rem;
-  margin: 0 1rem 0 4rem;
-}
-
-.header-texts {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.header-texts-title {
-  font-size: 2rem;
-}
-
-.header-texts-subtitle {
-  display: flex;
-  font-size: 1rem;
-  color: #AAA;
-  font-style: italic;
-}
 
 
 /* * * * * * * * * * * * * * * * */
