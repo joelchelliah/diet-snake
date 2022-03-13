@@ -2,7 +2,7 @@ module Animation exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Simple.Animation as Animation exposing (Animation)
+import Simple.Animation as Animation
 import Simple.Animation.Animated as Animated
 import Simple.Animation.Property as P
 
@@ -28,10 +28,10 @@ pulse =
         pulseSteps =
             Animation.steps
                 { startAt = [ P.scale 0.5, P.rotate 0 ], options = [ Animation.loop ] }
-                [ Animation.step 500 [ P.scale 1, P.rotate 15 ]
-                , Animation.step 300 [ P.scale 0.5, P.rotate 0 ]
-                , Animation.step 500 [ P.scale 1, P.rotate -15 ]
-                , Animation.step 300 [ P.scale 0.5, P.rotate 0 ]
+                [ Animation.step 500 [ P.scale 1.15, P.rotate 15 ]
+                , Animation.step 250 [ P.scale 0.5, P.rotate 0 ]
+                , Animation.step 500 [ P.scale 1.15, P.rotate -15 ]
+                , Animation.step 250 [ P.scale 0.5, P.rotate 0 ]
                 ]
     in
     Animated.div pulseSteps
