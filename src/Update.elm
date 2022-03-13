@@ -103,70 +103,8 @@ getBestStats { stats, bestStats } =
     { bestStats | weightLoss = newWeightLoss, stepsTaken = newStepsTaken, pillsTaken = newPillsTaken }
 
 
-updateWhileActive : Msg -> Model -> ( Model, Cmd Msg )
-updateWhileActive msg ({ snake, state, pill, map, stats, bestStats } as model) =
-    case msg of
-        StartGame ->
-            init bestStats ()
-
-        Enter ->
-            if state == Paused || state == Init then
-                ( { model | state = Running }, Cmd.none )
-
-            else if state == GameOver then
-                updateWhileActive StartGame model
-
-            else
-                ( { model | state = Paused }, Cmd.none )
-
-        KeyPress direction ->
-            let
-                newSnake =
-                    if isSnakePositionInSyncWithSnakeDirection snake then
-                        turnSnake direction snake
-
-                    else
-                        snake |> moveSnake |> turnSnake direction
-            in
-            ( { model | snake = newSnake }, Cmd.none )
-
-        Grow ->
-            ( { model | snake = growSnake stats snake }, Cmd.none )
-
-        Tick ->
-            let
-                newSnake =
-                    moveSnake snake
-
-                newStats =
-                    if isSnakeOnPill newSnake pill then
-                        { stats | stepsTaken = stats.stepsTaken + 1, pillsTaken = stats.pillsTaken + 1 }
-
-                    else
-                        { stats | stepsTaken = stats.stepsTaken + 1 }
-            in
-            if isSnakeOnFreeTile newSnake map then
-                ( { model | snake = newSnake, stats = newStats }
-                , getNewPillAndTrimCommand newSnake pill map
-                )
-
-            else
-                ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
-
-        NewPill pos ->
-            ( { model | pill = Just pos }, Cmd.none )
-
-        Trim amount ->
-            ( { model
-                | snake = trimSnake snake amount
-                , stats = { stats | weightLoss = stats.weightLoss + amount }
-              }
-            , Cmd.none
-            )
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ state } as model) =
+update msg ({ snake, state, pill, map, stats, bestStats } as model) =
     let
         isInactive =
             List.member state [ Init, Paused, GameOver ]
@@ -175,4 +113,61 @@ update msg ({ state } as model) =
         ( model, Cmd.none )
 
     else
-        updateWhileActive msg model
+        case msg of
+            StartGame ->
+                init bestStats ()
+
+            Enter ->
+                if state == Paused || state == Init then
+                    ( { model | state = Running }, Cmd.none )
+
+                else if state == GameOver then
+                    update StartGame model
+
+                else
+                    ( { model | state = Paused }, Cmd.none )
+
+            KeyPress direction ->
+                let
+                    newSnake =
+                        if isSnakePositionInSyncWithSnakeDirection snake then
+                            turnSnake direction snake
+
+                        else
+                            snake |> moveSnake |> turnSnake direction
+                in
+                ( { model | snake = newSnake }, Cmd.none )
+
+            Grow ->
+                ( { model | snake = growSnake stats snake }, Cmd.none )
+
+            Tick ->
+                let
+                    newSnake =
+                        moveSnake snake
+
+                    newStats =
+                        if isSnakeOnPill newSnake pill then
+                            { stats | stepsTaken = stats.stepsTaken + 1, pillsTaken = stats.pillsTaken + 1 }
+
+                        else
+                            { stats | stepsTaken = stats.stepsTaken + 1 }
+                in
+                if isSnakeOnFreeTile newSnake map then
+                    ( { model | snake = newSnake, stats = newStats }
+                    , getNewPillAndTrimCommand newSnake pill map
+                    )
+
+                else
+                    ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
+
+            NewPill pos ->
+                ( { model | pill = Just pos }, Cmd.none )
+
+            Trim amount ->
+                ( { model
+                    | snake = trimSnake snake amount
+                    , stats = { stats | weightLoss = stats.weightLoss + amount }
+                  }
+                , Cmd.none
+                )

@@ -41,25 +41,6 @@ trimmingGenerator snake =
     Random.int (clamp 2 max min) (clamp min 10 max)
 
 
-positionAndTrimmingGenerator : Snake -> Map -> Bool -> Random.Generator ( Position, Int )
-positionAndTrimmingGenerator snake map omitTrimming =
-    let
-        withoutTrimming pos =
-            ( pos, 0 )
-
-        withTrimming pos trim =
-            ( pos, trim )
-    in
-    if omitTrimming then
-        Random.map withoutTrimming (pillPositionGenerator snake map)
-
-    else
-        Random.map2
-            withTrimming
-            (pillPositionGenerator snake map)
-            (trimmingGenerator snake)
-
-
 getNewPillAndTrimCommand : Snake -> Pill -> Map -> Cmd Msg
 getNewPillAndTrimCommand snake pill map =
     let
