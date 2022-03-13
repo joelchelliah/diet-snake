@@ -112,8 +112,8 @@ viewModal { state } =
         Init ->
             growAppear 2
                 [ class "modal" ]
-                [ div [ class "modal-title" ] [ text "- Oh no -" ]
-                , div [ class "modal-text" ]
+                [ div [ class "title" ] [ text "- Oh no -" ]
+                , div [ class "text" ]
                     [ p [] [ text "Mr. Snake is growing too fast!" ]
                     , p [] [ text "Help him lose weight by taking his diet pills, and ensure that he lives a long and prosperous life." ]
                     , arrowIcons
@@ -126,14 +126,14 @@ viewModal { state } =
         Paused ->
             growAppear 1
                 [ class "modal" ]
-                [ div [ class "modal-title" ] [ text "- Paused -" ]
+                [ div [ class "title" ] [ text "- Paused -" ]
                 , viewPressEnterTo "resume your diet."
                 ]
 
         GameOver ->
             growAppear 1
                 [ class "modal" ]
-                [ div [ class "modal-title red-text" ] [ text "- Snake is dead -" ]
+                [ div [ class "title red-text" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "start a new diet."
                 ]
 
