@@ -110,7 +110,8 @@ viewModal : Model -> Html Msg
 viewModal { state } =
     case state of
         Init ->
-            div [ class "modal" ]
+            growAppear 2
+                [ class "modal" ]
                 [ div [ class "modal-title" ] [ text "- Oh no -" ]
                 , div [ class "modal-text" ]
                     [ p [] [ text "Mr. Snake is growing too fast!" ]
@@ -123,13 +124,15 @@ viewModal { state } =
                 ]
 
         Paused ->
-            div [ class "modal" ]
+            growAppear 1
+                [ class "modal" ]
                 [ div [ class "modal-title" ] [ text "- Paused -" ]
                 , viewPressEnterTo "resume your diet."
                 ]
 
         GameOver ->
-            div [ class "modal" ]
+            growAppear 1
+                [ class "modal" ]
                 [ div [ class "modal-title red-text" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "start a new diet."
                 ]

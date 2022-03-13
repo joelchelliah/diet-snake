@@ -105,11 +105,7 @@ getBestStats { stats, bestStats } =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ snake, state, pill, map, stats, bestStats } as model) =
-    let
-        isInactive =
-            List.member state [ Init, Paused, GameOver ]
-    in
-    if isInactive && msg /= Enter then
+    if List.member state [ Init, Paused, GameOver ] && msg /= Enter then
         ( model, Cmd.none )
 
     else
@@ -122,7 +118,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                     ( { model | state = Running }, Cmd.none )
 
                 else if state == GameOver then
-                    update StartGame model
+                    init bestStats ()
 
                 else
                     ( { model | state = Paused }, Cmd.none )

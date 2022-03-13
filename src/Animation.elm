@@ -8,7 +8,7 @@ import Simple.Animation.Property as P
 
 
 fadeAway : Int -> List (Attribute msg) -> List (Html msg) -> Html msg
-fadeAway index attributes msg =
+fadeAway index =
     let
         delayInMillis =
             100 * index
@@ -19,11 +19,11 @@ fadeAway index attributes msg =
                 [ P.rotate 0, P.opacity 1, P.scale 1 ]
                 [ P.rotate 180, P.opacity 0, P.scale 0 ]
     in
-    Animated.div fade attributes msg
+    Animated.div fade
 
 
 pulse : List (Attribute msg) -> List (Html msg) -> Html msg
-pulse attributes msg =
+pulse =
     let
         pulseSteps =
             Animation.steps
@@ -34,4 +34,25 @@ pulse attributes msg =
                 , Animation.step 300 [ P.scale 0.5, P.rotate 0 ]
                 ]
     in
-    Animated.div pulseSteps attributes msg
+    Animated.div pulseSteps
+
+
+growAppear : Float -> List (Attribute msg) -> List (Html msg) -> Html msg
+growAppear spin =
+    let
+        degrees =
+            spin * 180
+
+        windup =
+            0 - degrees
+
+        duration =
+            round (400 * degrees / 360)
+
+        grow =
+            Animation.fromTo
+                { duration = duration, options = [ Animation.easeOutCubic ] }
+                [ P.rotate windup, P.opacity 0, P.scale 0 ]
+                [ P.rotate 0, P.opacity 1, P.scale 1 ]
+    in
+    Animated.div grow
