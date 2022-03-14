@@ -2,7 +2,7 @@
 [build]
   #command = "vite build"
   CI="'' npm run build"
-  functions = "netlify/functions"
+  #functions = "netlify/functions"
   publish = "dist"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
