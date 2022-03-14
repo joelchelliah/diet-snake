@@ -56,25 +56,3 @@ growAppear spin =
                 [ P.rotate 0, P.opacity 1, P.scale 1 ]
     in
     Animated.div grow
-
-
-flipAround : Bool -> List (Attribute msg) -> List (Html msg) -> Html msg
-flipAround upsideDown =
-    let
-        flip =
-            Animation.fromTo
-                { duration = 800, options = [] }
-                [ if upsideDown then
-                    P.rotate 0
-
-                  else
-                    P.rotate 1
-                ]
-                [ if upsideDown then
-                    P.rotate 1
-
-                  else
-                    P.rotate 0
-                ]
-    in
-    Animated.div flip

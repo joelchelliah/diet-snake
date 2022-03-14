@@ -67,9 +67,6 @@ viewMap { snake, pill, map, state } =
 viewHeader : GameState -> Html Msg
 viewHeader state =
     let
-        iconContainer =
-            flipAround (state == GameOver)
-
         titleText =
             if state == GameOver then
                 span [ class "blue-text" ]
@@ -84,13 +81,13 @@ viewHeader state =
 
         subTitleText =
             if state == GameOver then
-                text "Whoops! ..Maybe try another diet?"
+                text "Whoops! ...Try another diet?"
 
             else
                 text "The totally backward snake game!"
     in
     div [ class "header" ]
-        [ iconContainer [ class "icon" ] [ text "🐍" ]
+        [ div [ class "icon" ] [ text "🐍" ]
         , div [ class "titles" ]
             [ div [ class "title" ] [ titleText ]
             , div [ class "subtitle" ] [ subTitleText ]
