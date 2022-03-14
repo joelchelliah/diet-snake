@@ -37,14 +37,10 @@ isSnakeOnFreeTile { head, tail } map =
     getFreeTilePositions tail map |> List.any isHeadOn
 
 
-
--- When directions are given too quickly, the snake's direction may change twice before position is updated.
--- This can lead to moving the snake in an invalid direction. E.g: Up -> Left -> Down, while the snake is still facing up.
--- Checking for this case here:
-
-
 isSnakePositionInSyncWithSnakeDirection : Snake -> Bool
 isSnakePositionInSyncWithSnakeDirection snake =
+    -- When directions are given too quickly, the snake's direction may change twice before position is updated.
+    -- This can lead to moving the snake in an invalid direction. E.g: Up -> Left -> Down, while the snake is still facing up.
     let
         ( headX, headY ) =
             snake.head
