@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import Command exposing (getNewPillAndTrimCommand)
+import Constants exposing (..)
 import Model exposing (..)
 import Utils exposing (..)
 

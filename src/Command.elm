@@ -1,5 +1,6 @@
 module Command exposing (getNewPillAndTrimCommand)
 
+import Constants exposing (..)
 import Model exposing (..)
 import Random
 import Utils exposing (..)
@@ -54,13 +55,23 @@ getShapeGenerator maybePill =
     Random.map (lookUpInListOrDefault shapes pillShape.square) indexGenerator
 
 
+rotationGenerator : Random.Generator Float
+rotationGenerator =
+    let
+        { min, max, multiplier } =
+            pillRotations
+    in
+    Random.float min max |> Random.map (\val -> val * multiplier)
+
+
 getPillGenerator : Snake -> Maybe Pill -> Map -> Random.Generator Pill
 getPillGenerator snake pill map =
-    Random.map3
-        (\pos col shape -> { position = pos, color = col, shape = shape })
+    Random.map4
+        (\pos col shape rot -> { position = pos, color = col, shape = shape, rotation = rot })
         (getPositionGenerator snake map)
         (getColorGenerator pill)
         (getShapeGenerator pill)
+        rotationGenerator
 
 
 getTrimGenerator : Snake -> Random.Generator Int

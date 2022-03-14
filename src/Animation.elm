@@ -22,19 +22,19 @@ fadeAway index =
     Animated.div fade
 
 
-pulse : List (Attribute msg) -> List (Html msg) -> Html msg
-pulse =
+pulseAndTurn : Float -> List (Attribute msg) -> List (Html msg) -> Html msg
+pulseAndTurn rotation =
     let
-        pulseSteps =
+        steps =
             Animation.steps
                 { startAt = [ P.scale 0.5, P.rotate 0 ], options = [ Animation.loop ] }
-                [ Animation.step 500 [ P.scale 1.15, P.rotate 15 ]
+                [ Animation.step 500 [ P.scale 1.15, P.rotate rotation ]
                 , Animation.step 250 [ P.scale 0.5, P.rotate 0 ]
-                , Animation.step 500 [ P.scale 1.15, P.rotate -15 ]
+                , Animation.step 500 [ P.scale 1.15, P.rotate -rotation ]
                 , Animation.step 250 [ P.scale 0.5, P.rotate 0 ]
                 ]
     in
-    Animated.div pulseSteps
+    Animated.div steps
 
 
 growAppear : Float -> List (Attribute msg) -> List (Html msg) -> Html msg

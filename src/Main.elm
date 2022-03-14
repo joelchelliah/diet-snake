@@ -51,8 +51,8 @@ viewTile snake pill isGameOver tile =
                     Nothing ->
                         span [] []
 
-                    Just { color, shape } ->
-                        makeTile (join " " [ "pill", color, shape ]) pulse
+                    Just { color, shape, rotation } ->
+                        pulseAndTurn rotation |> makeTile (join " " [ "pill", color, shape ])
 
             else if isTrimmedAwaySnakeHere snake pos then
                 fadeAwayDeadTiles snake.trimmed pos

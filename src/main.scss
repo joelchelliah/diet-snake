@@ -221,7 +221,7 @@ $row-height: $tile-size + $tile-border + $tile-border;
   }
 
   &.blue {
-    @include colored-tile(#66c);
+    @include colored-tile(#66a);
   }
 
   &.yellow {
@@ -249,8 +249,9 @@ $row-height: $tile-size + $tile-border + $tile-border;
 
   &.oval {
     border-radius: 1rem;
+    top: 0.1875rem;
     right: 0.25rem;
-    height: $tile-size * 0.75;
+    height: $tile-size * 0.5;
     width: $tile-size * 1.25;
   }
 

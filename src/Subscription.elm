@@ -1,6 +1,7 @@
 module Subscription exposing (subscriptions)
 
 import Browser.Events exposing (..)
+import Constants exposing (..)
 import Json.Decode as Decode
 import Model exposing (..)
 import Time
