@@ -3,14 +3,14 @@ module Utils exposing (..)
 import Model exposing (..)
 
 
-isPillHere : Pill -> Position -> Bool
-isPillHere pill pos =
+isPillHere : Position -> Maybe Pill -> Bool
+isPillHere pos pill =
     case pill of
         Nothing ->
             False
 
-        Just pillPos ->
-            pillPos == pos
+        Just { position } ->
+            position == pos
 
 
 isSnakeHere : Snake -> Position -> Bool
@@ -23,9 +23,9 @@ isTrimmedAwaySnakeHere { trimmed } pos =
     List.any (\sPos -> sPos == pos) trimmed
 
 
-isSnakeOnPill : Snake -> Pill -> Bool
-isSnakeOnPill { head } pill =
-    isPillHere pill head
+isSnakeOnPill : Snake -> Maybe Pill -> Bool
+isSnakeOnPill { head } =
+    isPillHere head
 
 
 isSnakeOnFreeTile : Snake -> Map -> Bool
@@ -99,9 +99,18 @@ getFreeTilePositions nonFreePositions map =
     List.filter (\pos -> not <| List.member pos nonFreePositions) nonWallPositions
 
 
-lookUpInList : Int -> List a -> Maybe a
-lookUpInList i list =
-    List.drop i list |> List.head
+lookUpInListOrDefault : List a -> a -> Int -> a
+lookUpInListOrDefault list default i =
+    let
+        found =
+            List.drop i list |> List.head
+    in
+    case found of
+        Nothing ->
+            default
+
+        Just value ->
+            value
 
 
 getIndexInList : a -> List a -> Int

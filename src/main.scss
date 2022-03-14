@@ -214,7 +214,21 @@ $row-height: $tile-size + $tile-border + $tile-border;
 }
 
 .pill {
-  @include colored-tile(#5b5);
+  &.green {
+    @include colored-tile(#5b5);
+  }
+  &.blue {
+    @include colored-tile(#66c);
+  }
+  &.yellow {
+    @include colored-tile(#dd4);
+  }
+  &.pink {
+    @include colored-tile(#d4d);
+  }
+  &.teal {
+    @include colored-tile(#4dd);
+  }
 }
 
 

@@ -12,7 +12,7 @@ import Update exposing (update)
 import Utils exposing (..)
 
 
-viewTile : Snake -> Pill -> Bool -> Tile -> Html Msg
+viewTile : Snake -> Maybe Pill -> Bool -> Tile -> Html Msg
 viewTile snake pill isGameOver tile =
     let
         makeTile className innerTile =
@@ -45,8 +45,13 @@ viewTile snake pill isGameOver tile =
                 else
                     makeTile "snake-body" div
 
-            else if isPillHere pill pos then
-                makeTile "pill" pulse
+            else if isPillHere pos pill then
+                case pill of
+                    Nothing ->
+                        span [] []
+
+                    Just { color } ->
+                        makeTile ("pill " ++ color) pulse
 
             else if isTrimmedAwaySnakeHere snake pos then
                 fadeAwayDeadTiles snake.trimmed pos

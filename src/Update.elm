@@ -157,8 +157,8 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 else
                     ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
 
-            NewPill pos ->
-                ( { model | pill = Just pos }, Cmd.none )
+            NewPill newPill ->
+                ( { model | pill = Just newPill }, Cmd.none )
 
             Trim amount ->
                 ( { model

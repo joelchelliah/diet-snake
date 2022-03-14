@@ -3,7 +3,7 @@ module Model exposing (..)
 
 type alias Model =
     { snake : Snake
-    , pill : Pill
+    , pill : Maybe Pill
     , state : GameState
     , map : Map
     , stats : Stats
@@ -33,7 +33,9 @@ type alias Stats =
 
 
 type alias Pill =
-    Maybe Position
+    { position : Position
+    , color : String
+    }
 
 
 type Direction
@@ -69,7 +71,7 @@ type Msg
     | Enter
     | Tick
     | Grow
-    | NewPill Position
+    | NewPill Pill
     | Trim Int
 
 
