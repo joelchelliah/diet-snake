@@ -113,12 +113,12 @@ viewModal { state } =
         Init ->
             growAppear 2.4
                 [ class "modal" ]
-                [ cookieIcons
+                [ viewCornerIcons Cookie
                 , div [ class "title" ] [ text "- Oh no -" ]
                 , div [ class "text" ]
                     [ p [] [ text "Mr. Snake is growing too fast!" ]
                     , p [] [ text "Help him lose weight by taking his diet pills, and ensure that he lives a long and prosperous life." ]
-                    , arrowIcons
+                    , viewArrowIcons
                     , text "Move around using the arrow keys."
                     ]
                 , viewPressEnterTo "start the diet!"
@@ -127,7 +127,7 @@ viewModal { state } =
         Paused ->
             growAppear 1.2
                 [ class "modal" ]
-                [ pauseIcons
+                [ viewCornerIcons Pause
                 , div [ class "title" ] [ text "- Paused -" ]
                 , viewPressEnterTo "resume your diet."
                 ]
@@ -135,7 +135,7 @@ viewModal { state } =
         GameOver ->
             growAppear 2.0
                 [ class "modal" ]
-                [ skullIcons
+                [ viewCornerIcons Skull
                 , div [ class "title red" ] [ text "- Snake is dead -" ]
                 , viewPressEnterTo "start a new diet."
                 ]
@@ -180,7 +180,7 @@ viewGithub =
     in
     div
         [ class "github" ]
-        [ githubIcon, a [ href url ] [ text "Find me on Github" ] ]
+        [ viewGithubIcon, a [ href url ] [ text "Find me on Github" ] ]
 
 
 view : Model -> Html Msg

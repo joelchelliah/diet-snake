@@ -11,23 +11,29 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 
-topCorners : List String
-topCorners =
+topCornerClasses : List String
+topCornerClasses =
     [ "up-left", "up-right" ]
 
 
-bottomCorners : List String
-bottomCorners =
+bottomCornerClasses : List String
+bottomCornerClasses =
     [ "down-left", "down-right" ]
 
 
 allCorners : List String
 allCorners =
-    List.append topCorners bottomCorners
+    List.append topCornerClasses bottomCornerClasses
 
 
-repeatIconPerCorner : Icon -> List String -> Html msg
-repeatIconPerCorner icon corners =
+type CornerIcon
+    = Cookie
+    | Pause
+    | Skull
+
+
+placeIconInCorners : Icon -> List String -> Html msg
+placeIconInCorners icon corners =
     let
         html =
             icon |> Icon.present |> Icon.styled [ Icon.sm ] |> Icon.view
@@ -40,34 +46,32 @@ iconCss =
     Icon.css
 
 
-cookieIcons : Html msg
-cookieIcons =
-    repeatIconPerCorner Icon.cookieBite allCorners
+viewCornerIcons : CornerIcon -> Html msg
+viewCornerIcons icon =
+    case icon of
+        Cookie ->
+            placeIconInCorners Icon.cookieBite allCorners
+
+        Pause ->
+            placeIconInCorners Icon.pause topCornerClasses
+
+        Skull ->
+            placeIconInCorners Icon.skull topCornerClasses
 
 
-pauseIcons : Html msg
-pauseIcons =
-    repeatIconPerCorner Icon.pause topCorners
-
-
-skullIcons : Html msg
-skullIcons =
-    repeatIconPerCorner Icon.skull topCorners
-
-
-arrowIcons : Html msg
-arrowIcons =
+viewArrowIcons : Html msg
+viewArrowIcons =
     let
         viewIcon i =
             i |> Icon.present |> Icon.styled [ Icon.lg ] |> Icon.view
+
+        icons =
+            [ Icon.arrowCircleUp, Icon.arrowCircleRight, Icon.arrowCircleDown, Icon.arrowCircleLeft ]
     in
     div [ class "arrow-icons" ]
-        (List.map
-            (\i -> span [ class "arrow-icon" ] [ viewIcon i ])
-            [ Icon.arrowCircleUp, Icon.arrowCircleRight, Icon.arrowCircleDown, Icon.arrowCircleLeft ]
-        )
+        (List.map (\i -> span [ class "arrow-icon" ] [ viewIcon i ]) icons)
 
 
-githubIcon : Html msg
-githubIcon =
+viewGithubIcon : Html msg
+viewGithubIcon =
     Icon.github |> Icon.present |> Icon.styled [ Icon.fa2x, Icon.pullLeft ] |> Icon.view
