@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Icon exposing (..)
 import Model exposing (..)
+import String exposing (join)
 import Subscription exposing (subscriptions)
 import Update exposing (update)
 import Utils exposing (..)
@@ -50,8 +51,8 @@ viewTile snake pill isGameOver tile =
                     Nothing ->
                         span [] []
 
-                    Just { color } ->
-                        makeTile ("pill " ++ color) pulse
+                    Just { color, shape } ->
+                        makeTile (join " " [ "pill", color, shape ]) pulse
 
             else if isTrimmedAwaySnakeHere snake pos then
                 fadeAwayDeadTiles snake.trimmed pos

@@ -35,6 +35,7 @@ type alias Stats =
 type alias Pill =
     { position : Position
     , color : String
+    , shape : String
     }
 
 
@@ -83,6 +84,35 @@ config =
     , growthStartAt = 10
     , growthRate = 180
     }
+
+
+pillColor : { green : String, blue : String, yellow : String, pink : String, teal : String }
+pillColor =
+    { green = "green"
+    , blue = "blue"
+    , yellow = "yellow"
+    , pink = "pink"
+    , teal = "teal"
+    }
+
+
+allPillColors : List String
+allPillColors =
+    [ pillColor.green, pillColor.blue, pillColor.yellow, pillColor.pink, pillColor.teal ]
+
+
+pillShape : { square : String, circle : String, rectangle : String, oval : String }
+pillShape =
+    { square = "square"
+    , circle = "circle"
+    , rectangle = "rectangle"
+    , oval = "oval"
+    }
+
+
+allPillShapes : List String
+allPillShapes =
+    [ pillShape.square, pillShape.circle, pillShape.rectangle, pillShape.oval ]
 
 
 initSnake : Int -> Snake

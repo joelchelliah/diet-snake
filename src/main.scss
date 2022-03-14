@@ -154,8 +154,8 @@ body {
 /* Map and snake styling */
 /* * * * * * * * * * * * * * * * */
 
-$tile-border: 2px;
-$tile-size: 16px;
+$tile-border: 0.125rem;
+$tile-size: 1rem;
 $row-height: $tile-size + $tile-border + $tile-border;
 
 %tile-base {
@@ -214,21 +214,46 @@ $row-height: $tile-size + $tile-border + $tile-border;
 }
 
 .pill {
+  position: relative;
+
   &.green {
     @include colored-tile(#5b5);
   }
+
   &.blue {
     @include colored-tile(#66c);
   }
+
   &.yellow {
     @include colored-tile(#dd4);
   }
+
   &.pink {
     @include colored-tile(#d4d);
   }
+
   &.teal {
     @include colored-tile(#4dd);
   }
+
+  &.circle {
+    border-radius: 1rem;
+  }
+
+  &.rectangle {
+    bottom: 0.25rem;
+    left: 0.1875rem;
+    height: $tile-size * 1.25;
+    width: $tile-size * 0.5;
+  }
+
+  &.oval {
+    border-radius: 1rem;
+    right: 0.25rem;
+    height: $tile-size * 0.75;
+    width: $tile-size * 1.25;
+  }
+
 }
 
 

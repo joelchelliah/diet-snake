@@ -5,19 +5,6 @@ import Random
 import Utils exposing (..)
 
 
-pillColor =
-    { green = "green"
-    , blue = "blue"
-    , yellow = "yellow"
-    , pink = "pink"
-    , teal = "teal"
-    }
-
-
-allPillColors =
-    [ pillColor.green, pillColor.blue, pillColor.yellow, pillColor.pink, pillColor.teal ]
-
-
 getPositionGenerator : Snake -> Map -> Random.Generator Position
 getPositionGenerator { head, tail } map =
     let
@@ -44,18 +31,36 @@ getColorGenerator maybePill =
                 Just pill ->
                     List.filter (\col -> col /= pill.color) allPillColors
 
-        colorIndexGenerator =
+        indexGenerator =
             Random.int 0 (List.length colors - 1)
     in
-    Random.map (lookUpInListOrDefault colors pillColor.green) colorIndexGenerator
+    Random.map (lookUpInListOrDefault colors pillColor.green) indexGenerator
+
+
+getShapeGenerator : Maybe Pill -> Random.Generator String
+getShapeGenerator maybePill =
+    let
+        shapes =
+            case maybePill of
+                Nothing ->
+                    allPillShapes
+
+                Just pill ->
+                    List.filter (\shape -> shape /= pill.shape) allPillShapes
+
+        indexGenerator =
+            Random.int 0 (List.length shapes - 1)
+    in
+    Random.map (lookUpInListOrDefault shapes pillShape.square) indexGenerator
 
 
 getPillGenerator : Snake -> Maybe Pill -> Map -> Random.Generator Pill
 getPillGenerator snake pill map =
-    Random.map2
-        (\pos col -> { position = pos, color = col })
+    Random.map3
+        (\pos col shape -> { position = pos, color = col, shape = shape })
         (getPositionGenerator snake map)
         (getColorGenerator pill)
+        (getShapeGenerator pill)
 
 
 getTrimGenerator : Snake -> Random.Generator Int
