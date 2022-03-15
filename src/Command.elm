@@ -38,23 +38,6 @@ getColorGenerator maybePill =
     Random.map (lookUpInListOrDefault colors pillColor.green) indexGenerator
 
 
-getShapeGenerator : Maybe Pill -> Random.Generator String
-getShapeGenerator maybePill =
-    let
-        shapes =
-            case maybePill of
-                Nothing ->
-                    allPillShapes
-
-                Just pill ->
-                    List.filter (\shape -> shape /= pill.shape) allPillShapes
-
-        indexGenerator =
-            Random.int 0 (List.length shapes - 1)
-    in
-    Random.map (lookUpInListOrDefault shapes pillShape.square) indexGenerator
-
-
 rotationGenerator : Random.Generator Float
 rotationGenerator =
     let
@@ -66,11 +49,10 @@ rotationGenerator =
 
 getPillGenerator : Snake -> Maybe Pill -> Map -> Random.Generator Pill
 getPillGenerator snake pill map =
-    Random.map4
-        (\pos col shape rot -> { position = pos, color = col, shape = shape, rotation = rot })
+    Random.map3
+        (\pos col rot -> { position = pos, color = col, rotation = rot })
         (getPositionGenerator snake map)
         (getColorGenerator pill)
-        (getShapeGenerator pill)
         rotationGenerator
 
 

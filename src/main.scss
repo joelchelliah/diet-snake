@@ -225,7 +225,7 @@ $row-height: $tile-size + $tile-border + $tile-border;
   }
 
   &.yellow {
-    @include colored-tile(#dd4);
+    @include colored-tile(#dd5);
   }
 
   &.pink {
@@ -233,28 +233,8 @@ $row-height: $tile-size + $tile-border + $tile-border;
   }
 
   &.teal {
-    @include colored-tile(#4dd);
+    @include colored-tile(#4cc);
   }
-
-  &.circle {
-    border-radius: 1rem;
-  }
-
-  &.rectangle {
-    bottom: 0.25rem;
-    left: 0.1875rem;
-    height: $tile-size * 1.25;
-    width: $tile-size * 0.5;
-  }
-
-  &.oval {
-    border-radius: 1rem;
-    top: 0.1875rem;
-    right: 0.25rem;
-    height: $tile-size * 0.5;
-    width: $tile-size * 1.25;
-  }
-
 }
 
 

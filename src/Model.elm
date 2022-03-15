@@ -37,7 +37,6 @@ type alias Stats =
 type alias Pill =
     { position : Position
     , color : String
-    , shape : String
     , rotation : Float
     }
 

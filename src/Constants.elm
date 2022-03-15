@@ -27,24 +27,9 @@ allPillColors =
     [ pillColor.green, pillColor.blue, pillColor.yellow, pillColor.pink, pillColor.teal ]
 
 
-pillShape : { square : String, circle : String, rectangle : String, oval : String }
-pillShape =
-    -- Must have corresponding CSS classes
-    { square = "square"
-    , circle = "circle"
-    , rectangle = "rectangle"
-    , oval = "oval"
-    }
-
-
-allPillShapes : List String
-allPillShapes =
-    [ pillShape.square, pillShape.circle, pillShape.rectangle, pillShape.oval ]
-
-
 pillRotations : { min : number, max : number, multiplier : number }
 pillRotations =
     { min = 1
-    , max = 10
-    , multiplier = 5
+    , max = 8
+    , multiplier = 10
     }
