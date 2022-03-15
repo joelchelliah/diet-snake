@@ -1,10 +1,10 @@
 module Command exposing (getNewPillAndTrimCommand)
 
-import Constants exposing (..)
-import Model exposing (..)
+import Pill
 import Random
 import Snake
-import Utils exposing (..)
+import Types exposing (Map, Msg(..), Pill, Position, Snake)
+import Utils exposing (getFreeTilePositions, lookUpInListOrDefault)
 
 
 getPositionGenerator : Snake -> Map -> Random.Generator Position
@@ -28,22 +28,22 @@ getColorGenerator maybePill =
         colors =
             case maybePill of
                 Nothing ->
-                    allPillColors
+                    Pill.allColors
 
                 Just pill ->
-                    List.filter (\col -> col /= pill.color) allPillColors
+                    List.filter (\col -> col /= pill.color) Pill.allColors
 
         indexGenerator =
             Random.int 0 (List.length colors - 1)
     in
-    Random.map (lookUpInListOrDefault colors pillColor.green) indexGenerator
+    Random.map (lookUpInListOrDefault colors Pill.color.green) indexGenerator
 
 
 rotationGenerator : Random.Generator Float
 rotationGenerator =
     let
         { min, max, multiplier } =
-            pillRotations
+            Pill.rotation
     in
     Random.float min max |> Random.map (\val -> val * multiplier)
 

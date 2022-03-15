@@ -4,7 +4,7 @@ import Animation exposing (fadeAndRise)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 import Icon exposing (viewArrowUpIcon)
-import Model exposing (Msg, Stats)
+import Types exposing (Msg, StatDetails, Stats)
 
 
 updateBest : Stats -> Stats
@@ -87,3 +87,23 @@ viewStat label currentValue postfix comparedValue showArrowOnLeft =
          else
             [ score, arrow ]
         )
+
+
+initDetails : StatDetails
+initDetails =
+    { weightLoss = 0
+    , pillsTaken = 0
+    , stepsTaken = 0
+    }
+
+
+init : StatDetails -> Stats
+init best =
+    { current =
+        { weightLoss = 0
+        , pillsTaken = 0
+        , stepsTaken = 0
+        }
+    , best = best
+    , prevBest = best
+    }

@@ -1,16 +1,6 @@
 module Utils exposing (..)
 
-import Model exposing (..)
-
-
-isPillHere : Position -> Maybe Pill -> Bool
-isPillHere pos pill =
-    case pill of
-        Nothing ->
-            False
-
-        Just { position } ->
-            position == pos
+import Types exposing (Map, Position, Tile(..))
 
 
 getNonWallPositions : Map -> List Position

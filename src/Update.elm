@@ -1,11 +1,10 @@
 module Update exposing (update)
 
 import Command exposing (getNewPillAndTrimCommand)
-import Constants exposing (..)
-import Model exposing (..)
+import Init exposing (init)
 import Snake
 import Stats
-import Utils exposing (..)
+import Types exposing (GameState(..), Model, Msg(..), Stats)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

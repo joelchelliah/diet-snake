@@ -6,11 +6,13 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Icon exposing (..)
-import Model exposing (..)
+import Init exposing (init)
+import Pill
 import Snake
 import Stats
 import String exposing (join)
 import Subscription exposing (subscriptions)
+import Types exposing (GameState(..), Model, Msg, Pill, Snake, Tile(..))
 import Update exposing (update)
 import Utils exposing (..)
 
@@ -48,7 +50,7 @@ viewTile snake pill isGameOver tile =
                 else
                     makeTile "snake-body" div
 
-            else if isPillHere pos pill then
+            else if Pill.isHere pos pill then
                 case pill of
                     Nothing ->
                         span [] []
@@ -175,7 +177,7 @@ view model =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init initStatDetails
+        { init = init Stats.initDetails
         , update = update
         , view = view
         , subscriptions = subscriptions

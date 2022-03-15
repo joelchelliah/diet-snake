@@ -1,7 +1,7 @@
 module Snake exposing (..)
 
-import Constants exposing (config)
-import Model exposing (Direction(..), Map, Pill, Position, Snake)
+import Config exposing (config)
+import Types exposing (Direction(..), Map, Pill, Position, Snake)
 import Utils exposing (getFreeTilePositions)
 
 
@@ -131,6 +131,28 @@ isOnPill pill { head, tail } =
 
         Just { position } ->
             List.any (\pos -> pos == position) (head :: tail)
+
+
+init : Int -> Snake
+init maxLength =
+    let
+        head =
+            ( config.gameWidth // 2, config.gameHeight // 2 )
+
+        createTail length =
+            if length == maxLength then
+                []
+
+            else
+                Tuple.mapSecond (\y -> y + length) head :: createTail (length + 1)
+    in
+    { head = head
+    , tail = createTail 0
+    , trimmed = []
+    , direction = Up
+    , isGrowing = False
+    , canGrow = False
+    }
 
 
 validateDirection : Direction -> Direction -> Direction
