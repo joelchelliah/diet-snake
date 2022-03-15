@@ -4,61 +4,8 @@ import Command exposing (getNewPillAndTrimCommand)
 import Constants exposing (..)
 import Model exposing (..)
 import Snake
+import Stats
 import Utils exposing (..)
-
-
-updateBestStats : Stats -> Stats
-updateBestStats ({ current, best } as stats) =
-    let
-        newWeightLoss =
-            if current.weightLoss > best.weightLoss then
-                current.weightLoss
-
-            else
-                best.weightLoss
-
-        newStepsTaken =
-            if current.stepsTaken > best.stepsTaken then
-                current.stepsTaken
-
-            else
-                best.stepsTaken
-
-        newPillsTaken =
-            if current.pillsTaken > best.pillsTaken then
-                current.pillsTaken
-
-            else
-                best.pillsTaken
-    in
-    { stats
-        | best =
-            { best
-                | weightLoss = newWeightLoss
-                , stepsTaken = newStepsTaken
-                , pillsTaken = newPillsTaken
-            }
-    }
-
-
-updateCurrentStats : Bool -> Int -> Stats -> Stats
-updateCurrentStats tookPill weightLoss ({ current } as stats) =
-    let
-        pillsTaken =
-            if tookPill then
-                1
-
-            else
-                0
-
-        newCurrent =
-            { current
-                | stepsTaken = current.stepsTaken + 1
-                , pillsTaken = current.pillsTaken + pillsTaken
-                , weightLoss = current.weightLoss + weightLoss
-            }
-    in
-    { stats | current = newCurrent }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -69,28 +16,20 @@ update msg ({ snake, state, pill, map, stats } as model) =
     else
         case msg of
             StartGame ->
-                init stats.best ()
+                restart stats
 
             Enter ->
                 if state == Paused || state == Init then
-                    ( { model | state = Running }, Cmd.none )
+                    unpause model
 
                 else if state == GameOver then
-                    init stats.best ()
+                    restart stats
 
                 else
-                    ( { model | state = Paused }, Cmd.none )
+                    pause model
 
             KeyPress direction ->
-                let
-                    newSnake =
-                        if Snake.isInSyncWithDirection snake then
-                            Snake.turn direction snake
-
-                        else
-                            snake |> Snake.move |> Snake.turn direction
-                in
-                ( { model | snake = newSnake }, Cmd.none )
+                ( { model | snake = Snake.turn direction snake }, Cmd.none )
 
             Grow ->
                 ( { model | snake = Snake.grow stats.current.stepsTaken snake }, Cmd.none )
@@ -106,13 +45,18 @@ update msg ({ snake, state, pill, map, stats } as model) =
                 if Snake.isOnFreeTile map newSnake then
                     ( { model
                         | snake = newSnake
-                        , stats = updateCurrentStats onPill 0 stats
+                        , stats = Stats.updateCurrent onPill 0 stats
                       }
                     , getNewPillAndTrimCommand newSnake pill map
                     )
 
                 else
-                    ( { model | state = GameOver, stats = updateBestStats stats }, Cmd.none )
+                    ( { model
+                        | state = GameOver
+                        , stats = Stats.updateBest stats
+                      }
+                    , Cmd.none
+                    )
 
             NewPill newPill ->
                 ( { model | pill = Just newPill }, Cmd.none )
@@ -120,7 +64,22 @@ update msg ({ snake, state, pill, map, stats } as model) =
             Trim amount ->
                 ( { model
                     | snake = Snake.trim snake amount
-                    , stats = updateCurrentStats False amount stats
+                    , stats = Stats.updateCurrent False amount stats
                   }
                 , Cmd.none
                 )
+
+
+restart : Stats -> ( Model, Cmd Msg )
+restart stats =
+    init stats.best ()
+
+
+pause : Model -> ( Model, Cmd msg )
+pause model =
+    ( { model | state = Paused }, Cmd.none )
+
+
+unpause : Model -> ( Model, Cmd msg )
+unpause model =
+    ( { model | state = Running }, Cmd.none )

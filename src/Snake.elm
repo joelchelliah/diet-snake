@@ -45,23 +45,19 @@ move ({ head, tail, isGrowing } as snake) =
 
 
 turn : Direction -> Snake -> Snake
-turn direction snake =
+turn newDirection snake =
     let
-        prevSelectedDirection =
-            snake.direction
-
-        isNewDirectionValid =
-            ((direction == Up || direction == Down) && (prevSelectedDirection == Left || prevSelectedDirection == Right))
-                || ((direction == Left || direction == Right) && (prevSelectedDirection == Up || prevSelectedDirection == Down))
-
-        newDirection =
-            if isNewDirectionValid then
-                direction
+        syncedSnake =
+            if isInSyncWithDirection snake then
+                snake
 
             else
-                prevSelectedDirection
+                move snake
+
+        validNewDirection =
+            validateDirection snake.direction newDirection
     in
-    { snake | direction = newDirection }
+    { syncedSnake | direction = validNewDirection }
 
 
 trim : Snake -> Int -> Snake
@@ -135,3 +131,17 @@ isOnPill pill { head, tail } =
 
         Just { position } ->
             List.any (\pos -> pos == position) (head :: tail)
+
+
+validateDirection : Direction -> Direction -> Direction
+validateDirection currentDirection newDirection =
+    let
+        isNewDirectionValid =
+            ((newDirection == Up || newDirection == Down) && (currentDirection == Left || currentDirection == Right))
+                || ((newDirection == Left || newDirection == Right) && (currentDirection == Up || currentDirection == Down))
+    in
+    if isNewDirectionValid then
+        newDirection
+
+    else
+        currentDirection

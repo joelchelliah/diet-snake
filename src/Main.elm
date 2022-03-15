@@ -8,6 +8,7 @@ import Html.Events exposing (..)
 import Icon exposing (..)
 import Model exposing (..)
 import Snake
+import Stats
 import String exposing (join)
 import Subscription exposing (subscriptions)
 import Update exposing (update)
@@ -148,56 +149,6 @@ viewModal { state } =
             span [] []
 
 
-viewScore : String -> Int -> String -> Int -> Bool -> Html msg
-viewScore key val postfix best arrowFirst =
-    let
-        arrow =
-            if val > best then
-                fadeAndRise [ class "arrow-up highlight" ] [ viewArrowUpIcon ]
-
-            else
-                div [ class "arrow-up" ] []
-
-        score =
-            div
-                [ class
-                    (if val > best then
-                        "score highlight"
-
-                     else
-                        "score"
-                    )
-                ]
-                [ div [] [ text (key ++ ":") ]
-                , div [] [ text (String.fromInt val ++ " " ++ postfix) ]
-                ]
-    in
-    div [ class "score-and-arrow" ]
-        (if arrowFirst then
-            [ arrow, score ]
-
-         else
-            [ score, arrow ]
-        )
-
-
-viewScoreBoards : Stats -> Html Msg
-viewScoreBoards { current, best, prevBest } =
-    div [ class "scoreboards" ]
-        [ div [ class "scoreboard", style "align-items" "flex-start" ]
-            [ viewScore "Distance covered" current.stepsTaken "cm" best.stepsTaken False
-            , viewScore "Pills taken" current.pillsTaken "mg" best.pillsTaken False
-            , viewScore "Weight lost" current.weightLoss "kg" best.weightLoss False
-            ]
-        , div [ class "scoreboard-divider" ] []
-        , div [ class "scoreboard", style "align-items" "flex-end" ]
-            [ viewScore "Longest distance" best.stepsTaken "cm " prevBest.stepsTaken True
-            , viewScore "Most pills taken" best.pillsTaken "mg" prevBest.pillsTaken True
-            , viewScore "Maximum weightloss" best.weightLoss "kg" prevBest.weightLoss True
-            ]
-        ]
-
-
 viewGithub : Html Msg
 viewGithub =
     let
@@ -215,7 +166,7 @@ view model =
         [ iconCss
         , viewHeader model.state
         , viewMap model
-        , viewScoreBoards model.stats
+        , Stats.view model.stats
         , viewModal model
         , viewGithub
         ]
