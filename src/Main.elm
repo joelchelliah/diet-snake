@@ -147,31 +147,46 @@ viewModal { state } =
             span [] []
 
 
+viewScore : String -> Int -> String -> Int -> Html msg
+viewScore key val postfix best =
+    let
+        scoreClass =
+            if val > best then
+                "score highlight"
+
+            else
+                "score"
+
+        chevron =
+            if val > best then
+                div [ class "arrow-up highlight" ] [ viewArrowUpIcon ]
+
+            else
+                span [] []
+    in
+    div [ class "score-and-arrow" ]
+        [ div [ class scoreClass ]
+            [ div [] [ text (key ++ ":") ]
+            , div [] [ text (String.fromInt val ++ " " ++ postfix) ]
+            ]
+        , chevron
+        ]
+
+
 viewScoreBoards : Model -> Html Msg
 viewScoreBoards { stats, bestStats } =
-    let
-        viewScore ( key, val, postfix ) =
-            div [ class "score" ] [ div [] [ text (key ++ ":") ], div [] [ text (String.fromInt val ++ " " ++ postfix) ] ]
-
-        viewScores scores =
-            List.map viewScore scores
-    in
     div [ class "scoreboards" ]
         [ div [ class "scoreboard", style "align-items" "flex-start" ]
-            (viewScores
-                [ ( "Distance covered", stats.stepsTaken, "cm" )
-                , ( "Pills taken", stats.pillsTaken, "mg" )
-                , ( "Weight lost", stats.weightLoss, "kg" )
-                ]
-            )
+            [ viewScore "Distance covered" stats.stepsTaken "cm" bestStats.stepsTaken
+            , viewScore "Pills taken" stats.pillsTaken "mg" bestStats.pillsTaken
+            , viewScore "Weight lost" stats.weightLoss "kg" bestStats.weightLoss
+            ]
         , div [ class "scoreboard-divider" ] []
         , div [ class "scoreboard", style "align-items" "flex-end" ]
-            (viewScores
-                [ ( "Longest distance", bestStats.stepsTaken, "cm " )
-                , ( "Most pills taken", bestStats.pillsTaken, "mg" )
-                , ( "Maximum weightloss", bestStats.weightLoss, "kg" )
-                ]
-            )
+            [ viewScore "Longest distance" bestStats.stepsTaken "cm " bestStats.stepsTaken
+            , viewScore "Most pills taken" bestStats.pillsTaken "mg" bestStats.pillsTaken
+            , viewScore "Maximum weightloss" bestStats.weightLoss "kg" bestStats.weightLoss
+            ]
         ]
 
 

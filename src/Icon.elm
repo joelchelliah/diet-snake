@@ -72,6 +72,11 @@ viewArrowIcons =
         (List.map (\i -> span [ class "arrow-icon" ] [ viewIcon i ]) icons)
 
 
+viewArrowUpIcon : Html msg
+viewArrowUpIcon =
+    Icon.caretUp |> Icon.present |> Icon.styled [ Icon.lg ] |> Icon.view
+
+
 viewGithubIcon : Html msg
 viewGithubIcon =
     Icon.github |> Icon.present |> Icon.styled [ Icon.fa2x, Icon.pullLeft ] |> Icon.view

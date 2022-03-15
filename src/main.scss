@@ -221,7 +221,7 @@ $row-height: $tile-size + $tile-border + $tile-border;
   }
 
   &.blue {
-    @include colored-tile(#66a);
+    @include colored-tile(#77f);
   }
 
   &.yellow {
@@ -229,7 +229,7 @@ $row-height: $tile-size + $tile-border + $tile-border;
   }
 
   &.pink {
-    @include colored-tile(#d4d);
+    @include colored-tile(#d6d);
   }
 
   &.teal {
@@ -282,11 +282,29 @@ $row-height: $tile-size + $tile-border + $tile-border;
   flex-direction: column;
   font-size: 0.875rem;
 
-  .score {
+  .score-and-arrow {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    min-width: 15rem;
+
+    .score {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      min-width: 15rem;
+    }
+
+    .arrow-up {
+      margin-left: 0.5rem;
+      position: relative;
+      top: 0.0625rem;
+    }
+
+    .highlight {
+      font-weight: 800;
+      color: #191;
+      font-style: italic;
+    }
   }
 }
 
