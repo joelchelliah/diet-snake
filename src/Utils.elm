@@ -3,10 +3,10 @@ module Utils exposing (..)
 import Types exposing (Map, Position, Tile(..))
 
 
-getNonWallPositions : Map -> List Position
-getNonWallPositions =
+getNonWallTilePositions : Map -> List Position
+getNonWallTilePositions =
     let
-        getFromRow =
+        getNonWallPositionsFromRow =
             List.filterMap
                 (\tile ->
                     case tile of
@@ -17,16 +17,13 @@ getNonWallPositions =
                             Just pos
                 )
     in
-    List.foldl (\row acc -> getFromRow row |> List.append acc) []
+    List.foldl (\row acc -> getNonWallPositionsFromRow row |> List.append acc) []
 
 
 getFreeTilePositions : List Position -> Map -> List Position
 getFreeTilePositions nonFreePositions map =
-    let
-        nonWallPositions =
-            getNonWallPositions map
-    in
-    List.filter (\pos -> not <| List.member pos nonFreePositions) nonWallPositions
+    getNonWallTilePositions map
+        |> List.filter (\pos -> List.member pos nonFreePositions |> not)
 
 
 lookUpInListOrDefault : List a -> a -> Int -> a

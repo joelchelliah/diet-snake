@@ -205,7 +205,8 @@ $row-height: $tile-size + $tile-border + $tile-border;
 .snake-head {
   @include colored-tile(#922);
 }
-.snake-body {
+
+.snake-tail {
   @include colored-tile(#d66);
 }
 

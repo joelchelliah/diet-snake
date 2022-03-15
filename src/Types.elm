@@ -40,7 +40,7 @@ type alias Snake =
 
 type alias Pill =
     { position : Position
-    , color : String
+    , color : PillColor
     , rotation : Float
     }
 
@@ -51,6 +51,14 @@ type alias Map =
 
 type alias Row =
     List Tile
+
+
+type PillColor
+    = Green
+    | Blue
+    | Yellow
+    | Pink
+    | Teal
 
 
 type Tile

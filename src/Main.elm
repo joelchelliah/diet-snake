@@ -1,77 +1,18 @@
 module Main exposing (..)
 
-import Animation exposing (..)
+import Animation exposing (growAppear)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Icon exposing (..)
+import Icon exposing (CornerIcon(..), iconCss, viewArrowIcons, viewCornerIcons, viewGithubIcon)
 import Init exposing (init)
-import Pill
-import Snake
 import Stats
-import String exposing (join)
 import Subscription exposing (subscriptions)
-import Types exposing (GameState(..), Model, Msg, Pill, Snake, Tile(..))
+import Tiles
+import Types exposing (GameState(..), Model, Msg, Tile(..))
 import Update exposing (update)
 import Utils exposing (..)
-
-
-viewTile : Snake -> Maybe Pill -> Bool -> Tile -> Html Msg
-viewTile snake pill isGameOver tile =
-    let
-        makeTile className innerTile =
-            case className of
-                "" ->
-                    div [ class "outer-tile" ] [ innerTile [] [] ]
-
-                name ->
-                    div [ class "outer-tile" ] [ innerTile [ class ("inner-tile " ++ name) ] [] ]
-
-        fadeAwayDeadTiles tiles pos =
-            tiles |> getIndexInList pos |> fadeAway |> makeTile "snake-dead"
-    in
-    case tile of
-        Wall ->
-            makeTile "wall" div
-
-        Open pos ->
-            if snake.head == pos then
-                if isGameOver then
-                    fadeAwayDeadTiles [ pos ] pos
-
-                else
-                    makeTile "snake-head" div
-
-            else if Snake.isTailHere snake pos then
-                if isGameOver then
-                    fadeAwayDeadTiles snake.tail pos
-
-                else
-                    makeTile "snake-body" div
-
-            else if Pill.isHere pos pill then
-                case pill of
-                    Nothing ->
-                        span [] []
-
-                    Just { color, rotation } ->
-                        pulseAndTurn rotation |> makeTile (join " " [ "pill", color ])
-
-            else if Snake.isTrimmedTailHere snake pos then
-                fadeAwayDeadTiles snake.trimmed pos
-
-            else
-                makeTile "" span
-
-
-viewMap : Model -> Html Msg
-viewMap { snake, pill, map, state } =
-    let
-        viewRow row =
-            div [ class "row" ] (List.map (viewTile snake pill (state == GameOver)) row)
-    in
-    div [] (List.map viewRow map)
 
 
 viewHeader : GameState -> Html Msg
@@ -167,7 +108,7 @@ view model =
     div [ class "game" ]
         [ iconCss
         , viewHeader model.state
-        , viewMap model
+        , Tiles.view model
         , Stats.view model.stats
         , viewModal model
         , viewGithub

@@ -1,4 +1,4 @@
-module Config exposing (..)
+module Config exposing (config)
 
 
 config : { gameWidth : number, gameHeight : number, gameSpeed : number, growthStartAt : number, growthRate : number }

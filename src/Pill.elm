@@ -1,22 +1,31 @@
 module Pill exposing (..)
 
-import Types exposing (Pill, Position)
+import Types exposing (Pill, PillColor(..), Position)
 
 
-color : { green : String, blue : String, yellow : String, pink : String, teal : String }
-color =
+colors : List PillColor
+colors =
     -- Must have corresponding CSS classes
-    { green = "green"
-    , blue = "blue"
-    , yellow = "yellow"
-    , pink = "pink"
-    , teal = "teal"
-    }
+    [ Green, Blue, Yellow, Pink, Teal ]
 
 
-allColors : List String
-allColors =
-    [ color.green, color.blue, color.yellow, color.pink, color.teal ]
+toString : PillColor -> String
+toString color =
+    case color of
+        Green ->
+            "green"
+
+        Blue ->
+            "blue"
+
+        Yellow ->
+            "yellow"
+
+        Pink ->
+            "pink"
+
+        Teal ->
+            "teal"
 
 
 rotation : { min : number, max : number, multiplier : number }
