@@ -22,6 +22,18 @@ fadeAway index =
     Animated.div fade
 
 
+fadeAndRise : List (Attribute msg) -> List (Html msg) -> Html msg
+fadeAndRise =
+    let
+        fade =
+            Animation.fromTo
+                { duration = 800, options = [ Animation.loop ] }
+                [ P.y 4, P.opacity 1, P.scale 1 ]
+                [ P.y -8, P.opacity 0, P.scale 0.75 ]
+    in
+    Animated.div fade
+
+
 pulseAndTurn : Float -> List (Attribute msg) -> List (Html msg) -> Html msg
 pulseAndTurn rotation =
     let

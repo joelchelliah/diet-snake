@@ -266,6 +266,7 @@ $row-height: $tile-size + $tile-border + $tile-border;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    min-width: 16.5rem;
 
     .score {
       display: flex;
@@ -275,9 +276,9 @@ $row-height: $tile-size + $tile-border + $tile-border;
     }
 
     .arrow-up {
-      margin-left: 0.5rem;
+      margin: 0 0.5rem;
       position: relative;
-      top: 0.0625rem;
+      width: 0.75rem;
     }
 
     .highlight {

@@ -9,7 +9,6 @@ type alias Model =
     , state : GameState
     , map : Map
     , stats : Stats
-    , bestStats : Stats
     }
 
 
@@ -27,10 +26,17 @@ type alias Snake =
     }
 
 
-type alias Stats =
+type alias StatDetails =
     { weightLoss : Int
     , pillsTaken : Int
     , stepsTaken : Int
+    }
+
+
+type alias Stats =
+    { current : StatDetails
+    , best : StatDetails
+    , prevBest : StatDetails
     }
 
 
@@ -116,22 +122,29 @@ initMap width height =
     List.map initRow (List.range 1 height)
 
 
-initStats : Stats
-initStats =
+initStatDetails : StatDetails
+initStatDetails =
     { weightLoss = 0
     , pillsTaken = 0
     , stepsTaken = 0
     }
 
 
-init : Stats -> () -> ( Model, Cmd Msg )
+initStats : StatDetails -> Stats
+initStats best =
+    { current = initStatDetails
+    , best = best
+    , prevBest = best
+    }
+
+
+init : StatDetails -> () -> ( Model, Cmd Msg )
 init bestStats () =
     ( { snake = initSnake 5
       , pill = Nothing
       , state = Init
       , map = initMap config.gameWidth config.gameHeight
-      , stats = initStats
-      , bestStats = bestStats
+      , stats = initStats bestStats
       }
     , Cmd.none
     )

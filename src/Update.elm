@@ -6,8 +6,8 @@ import Model exposing (..)
 import Utils exposing (..)
 
 
-growSnake : Stats -> Snake -> Snake
-growSnake { stepsTaken } snake =
+growSnake : Int -> Snake -> Snake
+growSnake stepsTaken snake =
     { snake
         | canGrow = stepsTaken >= config.growthStartAt
         , isGrowing = snake.canGrow
@@ -77,49 +77,76 @@ trimSnake ({ tail } as snake) trim =
     }
 
 
-getBestStats : Model -> Stats
-getBestStats { stats, bestStats } =
+updateBestStats : Stats -> Stats
+updateBestStats ({ current, best } as stats) =
     let
         newWeightLoss =
-            if stats.weightLoss > bestStats.weightLoss then
-                stats.weightLoss
+            if current.weightLoss > best.weightLoss then
+                current.weightLoss
 
             else
-                bestStats.weightLoss
+                best.weightLoss
 
         newStepsTaken =
-            if stats.stepsTaken > bestStats.stepsTaken then
-                stats.stepsTaken
+            if current.stepsTaken > best.stepsTaken then
+                current.stepsTaken
 
             else
-                bestStats.stepsTaken
+                best.stepsTaken
 
         newPillsTaken =
-            if stats.pillsTaken > bestStats.pillsTaken then
-                stats.pillsTaken
+            if current.pillsTaken > best.pillsTaken then
+                current.pillsTaken
 
             else
-                bestStats.pillsTaken
+                best.pillsTaken
     in
-    { bestStats | weightLoss = newWeightLoss, stepsTaken = newStepsTaken, pillsTaken = newPillsTaken }
+    { stats
+        | best =
+            { best
+                | weightLoss = newWeightLoss
+                , stepsTaken = newStepsTaken
+                , pillsTaken = newPillsTaken
+            }
+    }
+
+
+updateCurrentStats : Bool -> Int -> Stats -> Stats
+updateCurrentStats tookPill weightLoss ({ current } as stats) =
+    let
+        pillsTaken =
+            if tookPill then
+                1
+
+            else
+                0
+
+        newCurrent =
+            { current
+                | stepsTaken = current.stepsTaken + 1
+                , pillsTaken = current.pillsTaken + pillsTaken
+                , weightLoss = current.weightLoss + weightLoss
+            }
+    in
+    { stats | current = newCurrent }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ snake, state, pill, map, stats, bestStats } as model) =
+update msg ({ snake, state, pill, map, stats } as model) =
     if List.member state [ Init, Paused, GameOver ] && msg /= Enter then
         ( model, Cmd.none )
 
     else
         case msg of
             StartGame ->
-                init bestStats ()
+                init stats.best ()
 
             Enter ->
                 if state == Paused || state == Init then
                     ( { model | state = Running }, Cmd.none )
 
                 else if state == GameOver then
-                    init bestStats ()
+                    init stats.best ()
 
                 else
                     ( { model | state = Paused }, Cmd.none )
@@ -136,27 +163,26 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
                 ( { model | snake = newSnake }, Cmd.none )
 
             Grow ->
-                ( { model | snake = growSnake stats snake }, Cmd.none )
+                ( { model | snake = growSnake stats.current.stepsTaken snake }, Cmd.none )
 
             Tick ->
                 let
                     newSnake =
                         moveSnake snake
 
-                    newStats =
-                        if isSnakeOnPill newSnake pill then
-                            { stats | stepsTaken = stats.stepsTaken + 1, pillsTaken = stats.pillsTaken + 1 }
-
-                        else
-                            { stats | stepsTaken = stats.stepsTaken + 1 }
+                    tookPill =
+                        isSnakeOnPill newSnake pill
                 in
                 if isSnakeOnFreeTile newSnake map then
-                    ( { model | snake = newSnake, stats = newStats }
+                    ( { model
+                        | snake = newSnake
+                        , stats = updateCurrentStats tookPill 0 stats
+                      }
                     , getNewPillAndTrimCommand newSnake pill map
                     )
 
                 else
-                    ( { model | state = GameOver, bestStats = getBestStats model }, Cmd.none )
+                    ( { model | state = GameOver, stats = updateBestStats stats }, Cmd.none )
 
             NewPill newPill ->
                 ( { model | pill = Just newPill }, Cmd.none )
@@ -164,7 +190,7 @@ update msg ({ snake, state, pill, map, stats, bestStats } as model) =
             Trim amount ->
                 ( { model
                     | snake = trimSnake snake amount
-                    , stats = { stats | weightLoss = stats.weightLoss + amount }
+                    , stats = updateCurrentStats False amount stats
                   }
                 , Cmd.none
                 )

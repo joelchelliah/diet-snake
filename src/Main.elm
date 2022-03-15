@@ -147,45 +147,52 @@ viewModal { state } =
             span [] []
 
 
-viewScore : String -> Int -> String -> Int -> Html msg
-viewScore key val postfix best =
+viewScore : String -> Int -> String -> Int -> Bool -> Html msg
+viewScore key val postfix best arrowFirst =
     let
-        scoreClass =
+        arrow =
             if val > best then
-                "score highlight"
+                fadeAndRise [ class "arrow-up highlight" ] [ viewArrowUpIcon ]
 
             else
-                "score"
+                div [ class "arrow-up" ] []
 
-        chevron =
-            if val > best then
-                div [ class "arrow-up highlight" ] [ viewArrowUpIcon ]
+        score =
+            div
+                [ class
+                    (if val > best then
+                        "score highlight"
 
-            else
-                span [] []
+                     else
+                        "score"
+                    )
+                ]
+                [ div [] [ text (key ++ ":") ]
+                , div [] [ text (String.fromInt val ++ " " ++ postfix) ]
+                ]
     in
     div [ class "score-and-arrow" ]
-        [ div [ class scoreClass ]
-            [ div [] [ text (key ++ ":") ]
-            , div [] [ text (String.fromInt val ++ " " ++ postfix) ]
-            ]
-        , chevron
-        ]
+        (if arrowFirst then
+            [ arrow, score ]
+
+         else
+            [ score, arrow ]
+        )
 
 
-viewScoreBoards : Model -> Html Msg
-viewScoreBoards { stats, bestStats } =
+viewScoreBoards : Stats -> Html Msg
+viewScoreBoards { current, best, prevBest } =
     div [ class "scoreboards" ]
         [ div [ class "scoreboard", style "align-items" "flex-start" ]
-            [ viewScore "Distance covered" stats.stepsTaken "cm" bestStats.stepsTaken
-            , viewScore "Pills taken" stats.pillsTaken "mg" bestStats.pillsTaken
-            , viewScore "Weight lost" stats.weightLoss "kg" bestStats.weightLoss
+            [ viewScore "Distance covered" current.stepsTaken "cm" best.stepsTaken False
+            , viewScore "Pills taken" current.pillsTaken "mg" best.pillsTaken False
+            , viewScore "Weight lost" current.weightLoss "kg" best.weightLoss False
             ]
         , div [ class "scoreboard-divider" ] []
         , div [ class "scoreboard", style "align-items" "flex-end" ]
-            [ viewScore "Longest distance" bestStats.stepsTaken "cm " bestStats.stepsTaken
-            , viewScore "Most pills taken" bestStats.pillsTaken "mg" bestStats.pillsTaken
-            , viewScore "Maximum weightloss" bestStats.weightLoss "kg" bestStats.weightLoss
+            [ viewScore "Longest distance" best.stepsTaken "cm " prevBest.stepsTaken True
+            , viewScore "Most pills taken" best.pillsTaken "mg" prevBest.pillsTaken True
+            , viewScore "Maximum weightloss" best.weightLoss "kg" prevBest.weightLoss True
             ]
         ]
 
@@ -207,7 +214,7 @@ view model =
         [ iconCss
         , viewHeader model.state
         , viewMap model
-        , viewScoreBoards model
+        , viewScoreBoards model.stats
         , viewModal model
         , viewGithub
         ]
@@ -216,7 +223,7 @@ view model =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init initStats
+        { init = init initStatDetails
         , update = update
         , view = view
         , subscriptions = subscriptions
