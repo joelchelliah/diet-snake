@@ -3,6 +3,7 @@ module Command exposing (getNewPillAndTrimCommand)
 import Constants exposing (..)
 import Model exposing (..)
 import Random
+import Snake
 import Utils exposing (..)
 
 
@@ -80,7 +81,7 @@ getNewPillAndTrimCommand snake pill map =
         trimCmd =
             Random.generate Trim (getTrimGenerator snake)
     in
-    if isSnakeOnPill snake pill then
+    if Snake.isOnPill pill snake then
         Cmd.batch [ newPillCmd, trimCmd ]
 
     else if pill == Nothing then

@@ -7,6 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Icon exposing (..)
 import Model exposing (..)
+import Snake
 import String exposing (join)
 import Subscription exposing (subscriptions)
 import Update exposing (update)
@@ -39,7 +40,7 @@ viewTile snake pill isGameOver tile =
                 else
                     makeTile "snake-head" div
 
-            else if isSnakeHere snake pos then
+            else if Snake.isTailHere snake pos then
                 if isGameOver then
                     fadeAwayDeadTiles snake.tail pos
 
@@ -54,7 +55,7 @@ viewTile snake pill isGameOver tile =
                     Just { color, rotation } ->
                         pulseAndTurn rotation |> makeTile (join " " [ "pill", color ])
 
-            else if isTrimmedAwaySnakeHere snake pos then
+            else if Snake.isTrimmedTailHere snake pos then
                 fadeAwayDeadTiles snake.trimmed pos
 
             else

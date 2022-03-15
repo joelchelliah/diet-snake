@@ -3,78 +3,8 @@ module Update exposing (update)
 import Command exposing (getNewPillAndTrimCommand)
 import Constants exposing (..)
 import Model exposing (..)
+import Snake
 import Utils exposing (..)
-
-
-growSnake : Int -> Snake -> Snake
-growSnake stepsTaken snake =
-    { snake
-        | canGrow = stepsTaken >= config.growthStartAt
-        , isGrowing = snake.canGrow
-    }
-
-
-moveSnake : Snake -> Snake
-moveSnake ({ head, tail, isGrowing } as snake) =
-    let
-        newTail =
-            if isGrowing then
-                head :: tail
-
-            else
-                head :: List.take (List.length tail - 1) tail
-
-        updateWithHead newHead =
-            { snake
-                | head = newHead
-                , tail = newTail
-                , isGrowing = False
-            }
-    in
-    case snake.direction of
-        Up ->
-            Tuple.mapSecond (\v -> v - 1) head |> updateWithHead
-
-        Down ->
-            Tuple.mapSecond (\v -> v + 1) head |> updateWithHead
-
-        Left ->
-            Tuple.mapFirst (\v -> v - 1) head |> updateWithHead
-
-        Right ->
-            Tuple.mapFirst (\v -> v + 1) head |> updateWithHead
-
-
-turnSnake : Direction -> Snake -> Snake
-turnSnake direction snake =
-    let
-        prevSelectedDirection =
-            snake.direction
-
-        isNewDirectionValid =
-            ((direction == Up || direction == Down) && (prevSelectedDirection == Left || prevSelectedDirection == Right))
-                || ((direction == Left || direction == Right) && (prevSelectedDirection == Up || prevSelectedDirection == Down))
-
-        newDirection =
-            if isNewDirectionValid then
-                direction
-
-            else
-                prevSelectedDirection
-    in
-    { snake | direction = newDirection }
-
-
-trimSnake : Snake -> Int -> Snake
-trimSnake ({ tail } as snake) trim =
-    let
-        numKept =
-            List.length tail - trim
-    in
-    { snake
-        | tail = List.take numKept tail
-        , trimmed = tail |> List.drop numKept |> List.reverse
-    }
 
 
 updateBestStats : Stats -> Stats
@@ -154,29 +84,29 @@ update msg ({ snake, state, pill, map, stats } as model) =
             KeyPress direction ->
                 let
                     newSnake =
-                        if isSnakePositionInSyncWithSnakeDirection snake then
-                            turnSnake direction snake
+                        if Snake.isInSyncWithDirection snake then
+                            Snake.turn direction snake
 
                         else
-                            snake |> moveSnake |> turnSnake direction
+                            snake |> Snake.move |> Snake.turn direction
                 in
                 ( { model | snake = newSnake }, Cmd.none )
 
             Grow ->
-                ( { model | snake = growSnake stats.current.stepsTaken snake }, Cmd.none )
+                ( { model | snake = Snake.grow stats.current.stepsTaken snake }, Cmd.none )
 
             Tick ->
                 let
                     newSnake =
-                        moveSnake snake
+                        Snake.move snake
 
-                    tookPill =
-                        isSnakeOnPill newSnake pill
+                    onPill =
+                        Snake.isOnPill pill newSnake
                 in
-                if isSnakeOnFreeTile newSnake map then
+                if Snake.isOnFreeTile map newSnake then
                     ( { model
                         | snake = newSnake
-                        , stats = updateCurrentStats tookPill 0 stats
+                        , stats = updateCurrentStats onPill 0 stats
                       }
                     , getNewPillAndTrimCommand newSnake pill map
                     )
@@ -189,7 +119,7 @@ update msg ({ snake, state, pill, map, stats } as model) =
 
             Trim amount ->
                 ( { model
-                    | snake = trimSnake snake amount
+                    | snake = Snake.trim snake amount
                     , stats = updateCurrentStats False amount stats
                   }
                 , Cmd.none
