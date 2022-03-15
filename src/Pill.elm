@@ -44,3 +44,8 @@ isHere pos pill =
 
         Just { position } ->
             position == pos
+
+
+getAllColorsExceptPillColor : Pill -> List PillColor
+getAllColorsExceptPillColor pill =
+    List.filter (\col -> col /= pill.color) colors

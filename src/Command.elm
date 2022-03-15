@@ -31,7 +31,7 @@ getColorGenerator maybePill =
                     Pill.colors
 
                 Just pill ->
-                    List.filter (\col -> col /= pill.color) Pill.colors
+                    Pill.getAllColorsExceptPillColor pill
 
         indexGenerator =
             Random.int 0 (List.length colors - 1)
@@ -39,13 +39,30 @@ getColorGenerator maybePill =
     Random.map (lookUpInListOrDefault colors Green) indexGenerator
 
 
-rotationGenerator : Random.Generator Float
-rotationGenerator =
+getRotationGenerator : Maybe Pill -> Random.Generator Float
+getRotationGenerator maybePill =
     let
         { min, max, multiplier } =
             Pill.rotation
+
+        isCurrentPillRotation rotation =
+            case maybePill of
+                Nothing ->
+                    False
+
+                Just pill ->
+                    pill.rotation == rotation
     in
-    Random.float min max |> Random.map (\val -> val * multiplier)
+    Random.float min max
+        |> Random.map (\val -> val * multiplier)
+        |> Random.map
+            (\rot ->
+                if isCurrentPillRotation rot then
+                    rot - Pill.rotation.multiplier
+
+                else
+                    rot
+            )
 
 
 getPillGenerator : Snake -> Maybe Pill -> Map -> Random.Generator Pill
@@ -54,7 +71,7 @@ getPillGenerator snake pill map =
         (\pos col rot -> { position = pos, color = col, rotation = rot })
         (getPositionGenerator snake map)
         (getColorGenerator pill)
-        rotationGenerator
+        (getRotationGenerator pill)
 
 
 getTrimGenerator : Snake -> Random.Generator Int
