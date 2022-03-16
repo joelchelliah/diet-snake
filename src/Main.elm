@@ -1,115 +1,122 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Events exposing (onKeyDown)
+import Components.Hud
+import Components.Snake
 import Components.Stats
 import Components.Tiles
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Init exposing (init)
-import Model exposing (GameState(..), Model, Msg, Tile(..))
-import Subscription exposing (subscriptions)
-import Update exposing (update)
-import Utils.Animation exposing (growAppear)
-import Utils.Icon exposing (CornerIcon(..), iconCss, viewArrowIcons, viewCornerIcons, viewGithubIcon)
-import Utils.ListExtra exposing (..)
+import Html exposing (Html, div)
+import Html.Attributes exposing (class)
+import Json.Decode as Decode
+import Message exposing (getNewPillAndTrimCommand, keyToMessage)
+import Model exposing (Direction(..), GameState(..), Model, Msg(..), StatDetails, Tile(..), config)
+import Time
+import Utils.Icon exposing (CornerIcon(..), iconCss)
 
 
-viewHeader : GameState -> Html Msg
-viewHeader state =
-    let
-        title =
-            if state == GameOver then
-                div [ class "title" ]
-                    [ span [ class "red" ] [ text "D" ]
-                    , span [ class "cancelled" ] [ text "iet" ]
-                    , span [ class "red" ] [ text "ead " ]
-                    , text "Snake"
-                    ]
-
-            else
-                div [ class "title" ] [ text "Diet Snake" ]
-
-        subTitle =
-            if state == GameOver then
-                div [ class "subtitle" ] [ text "Whoops! ...Try another diet?" ]
-
-            else
-                div [ class "subtitle" ] [ text "The totally backward snake game!" ]
-    in
-    div [ class "header" ]
-        [ div [ class "icon" ] [ text "🐍" ]
-        , div [ class "title-container" ] [ title, subTitle ]
-        ]
+init : StatDetails -> () -> ( Model, Cmd Msg )
+init bestStats () =
+    ( { snake = Components.Snake.init 5
+      , pill = Nothing
+      , state = Init
+      , map = Components.Tiles.init config.gameWidth config.gameHeight
+      , stats = Components.Stats.init bestStats
+      }
+    , Cmd.none
+    )
 
 
-viewPressEnterTo : String -> Html Msg
-viewPressEnterTo reason =
-    div []
-        [ text "Press "
-        , b [] [ i [ class "enter" ] [ text "Enter" ] ]
-        , text (" to " ++ reason)
-        ]
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg ({ snake, state, pill, map, stats } as model) =
+    if List.member state [ Init, Paused, GameOver ] && msg /= Enter then
+        ( model, Cmd.none )
 
+    else
+        case msg of
+            StartGame ->
+                init stats.best ()
 
-viewModal : Model -> Html Msg
-viewModal { state } =
-    case state of
-        Init ->
-            growAppear 2.4
-                [ class "modal" ]
-                [ viewCornerIcons Cookie
-                , div [ class "title" ] [ text "- Oh no -" ]
-                , div [ class "text" ]
-                    [ p [] [ text "Mr. Snake is growing too fast!" ]
-                    , p [] [ text "Help him lose weight by taking his diet pills, and ensure that he lives a long and prosperous life." ]
-                    , viewArrowIcons
-                    , text "Move around using the arrow keys."
-                    ]
-                , viewPressEnterTo "start the diet!"
-                ]
+            Enter ->
+                if state == Paused || state == Init then
+                    ( { model | state = Running }, Cmd.none )
 
-        Paused ->
-            growAppear 1.2
-                [ class "modal" ]
-                [ viewCornerIcons Pause
-                , div [ class "title" ] [ text "- Paused -" ]
-                , viewPressEnterTo "resume your diet."
-                ]
+                else if state == GameOver then
+                    init stats.best ()
 
-        GameOver ->
-            growAppear 2.0
-                [ class "modal" ]
-                [ viewCornerIcons Skull
-                , div [ class "title red" ] [ text "- Snake is dead -" ]
-                , viewPressEnterTo "start a new diet."
-                ]
+                else
+                    ( { model | state = Paused }, Cmd.none )
 
-        _ ->
-            span [] []
+            KeyPress direction ->
+                ( { model | snake = Components.Snake.turn direction snake }, Cmd.none )
 
+            Grow ->
+                ( { model | snake = Components.Snake.grow stats.current.stepsTaken snake }, Cmd.none )
 
-viewGithub : Html Msg
-viewGithub =
-    let
-        url =
-            "https://github.com/joelchelliah/diet-snake"
-    in
-    div
-        [ class "github" ]
-        [ viewGithubIcon, a [ href url ] [ text "Find me on Github" ] ]
+            Tick ->
+                let
+                    newSnake =
+                        Components.Snake.move snake
+
+                    onPill =
+                        Components.Snake.isOnPill pill newSnake
+                in
+                if Components.Snake.isOnFreeTile map newSnake then
+                    ( { model
+                        | snake = newSnake
+                        , stats = Components.Stats.updateCurrent onPill 0 stats
+                      }
+                    , getNewPillAndTrimCommand newSnake pill map
+                    )
+
+                else
+                    ( { model
+                        | state = GameOver
+                        , stats = Components.Stats.updateBest stats
+                      }
+                    , Cmd.none
+                    )
+
+            NewPill newPill ->
+                ( { model | pill = Just newPill }, Cmd.none )
+
+            Trim amount ->
+                ( { model
+                    | snake = Components.Snake.trim snake amount
+                    , stats = Components.Stats.updateCurrent False amount stats
+                  }
+                , Cmd.none
+                )
 
 
 view : Model -> Html Msg
 view model =
     div [ class "game" ]
         [ iconCss
-        , viewHeader model.state
+        , Components.Hud.viewHeader model
         , Components.Tiles.view model
         , Components.Stats.view model.stats
-        , viewModal model
-        , viewGithub
+        , Components.Hud.viewModal model
+        , Components.Hud.viewFooter
         ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    let
+        keyDownSubscription =
+            Decode.field "key" Decode.string |> Decode.map keyToMessage |> onKeyDown
+    in
+    case model.state of
+        Running ->
+            Sub.batch
+                [ Time.every config.gameSpeed (\_ -> Tick)
+                , Time.every config.growthRate (\_ -> Grow)
+                , keyDownSubscription
+                ]
+
+        _ ->
+            keyDownSubscription
 
 
 main : Program () Model Msg

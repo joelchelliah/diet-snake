@@ -1,4 +1,4 @@
-module Utils.ListExtra exposing (..)
+module Utils.List exposing (..)
 
 
 lookUpInListOrDefault : List a -> a -> Int -> a

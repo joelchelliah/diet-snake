@@ -6,7 +6,7 @@ import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (class)
 import Model exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..))
 import Utils.Animation exposing (fadeAway, pulseAndTurn)
-import Utils.ListExtra exposing (getIndexInList)
+import Utils.List exposing (getIndexInList)
 
 
 type alias Container msg =

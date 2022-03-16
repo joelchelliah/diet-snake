@@ -1,10 +1,10 @@
-module Command exposing (getNewPillAndTrimCommand)
+module Message exposing (getNewPillAndTrimCommand, keyToMessage)
 
 import Components.Pill
 import Components.Snake
-import Model exposing (Map, Msg(..), Pill, PillColor(..), Position, Snake)
+import Model exposing (Direction(..), Map, Msg(..), Pill, PillColor(..), Position, Snake)
 import Random
-import Utils.ListExtra exposing (lookUpInListOrDefault)
+import Utils.List exposing (lookUpInListOrDefault)
 import Utils.Position exposing (getFreeTilePositions)
 
 
@@ -107,3 +107,25 @@ getNewPillAndTrimCommand snake pill map =
 
     else
         Cmd.none
+
+
+keyToMessage : String -> Msg
+keyToMessage key =
+    case key of
+        "ArrowUp" ->
+            KeyPress Up
+
+        "ArrowRight" ->
+            KeyPress Right
+
+        "ArrowDown" ->
+            KeyPress Down
+
+        "ArrowLeft" ->
+            KeyPress Left
+
+        "Enter" ->
+            Enter
+
+        _ ->
+            Tick
