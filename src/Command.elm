@@ -2,8 +2,8 @@ module Command exposing (getNewPillAndTrimCommand)
 
 import Components.Pill
 import Components.Snake
+import Model exposing (Map, Msg(..), Pill, PillColor(..), Position, Snake)
 import Random
-import Types exposing (Map, Msg(..), Pill, PillColor(..), Position, Snake)
 import Utils.ListExtra exposing (lookUpInListOrDefault)
 import Utils.Position exposing (getFreeTilePositions)
 

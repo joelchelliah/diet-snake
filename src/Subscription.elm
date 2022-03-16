@@ -1,10 +1,9 @@
 module Subscription exposing (subscriptions)
 
 import Browser.Events exposing (..)
-import Config exposing (config)
 import Json.Decode as Decode
+import Model exposing (Direction(..), GameState(..), Model, Msg(..), config)
 import Time
-import Types exposing (Direction(..), GameState(..), Model, Msg(..))
 
 
 keyToMsg : String -> Msg

@@ -3,8 +3,7 @@ module Init exposing (init)
 import Components.Snake
 import Components.Stats
 import Components.Tiles
-import Config exposing (config)
-import Types exposing (Direction(..), GameState(..), Model, Msg, StatDetails, Tile(..))
+import Model exposing (Direction(..), GameState(..), Model, Msg, StatDetails, Tile(..), config)
 
 
 init : StatDetails -> () -> ( Model, Cmd Msg )

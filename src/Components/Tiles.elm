@@ -4,8 +4,8 @@ import Components.Pill
 import Components.Snake
 import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (class)
+import Model exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..))
 import String
-import Types exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..))
 import Utils.Animation exposing (fadeAway, pulseAndTurn)
 import Utils.ListExtra exposing (getIndexInList)
 
@@ -28,7 +28,7 @@ makeTile className innerTile =
             innerTile [ class ("inner-tile " ++ name) ] [] |> wrapInOuterTile
 
 
-makePill : Types.PillColor -> Float -> Html msg
+makePill : Model.PillColor -> Float -> Html msg
 makePill color rotation =
     pulseAndTurn rotation |> makeTile (String.join " " [ "pill", Components.Pill.toString color ])
 
@@ -39,7 +39,7 @@ fadeAwayDeadTiles tilePositions currentTilePosition =
     tilePositions |> getIndexInList currentTilePosition |> fadeAway |> makeTile "snake-dead"
 
 
-placeTile : { head : Html msg, tail : Html msg, dead : List Position -> Position -> Html msg, pill : Types.PillColor -> Float -> Html msg, wall : Html msg, open : Html msg }
+placeTile : { head : Html msg, tail : Html msg, dead : List Position -> Position -> Html msg, pill : Model.PillColor -> Float -> Html msg, wall : Html msg, open : Html msg }
 placeTile =
     { head = makeTile "snake-head" div
     , tail = makeTile "snake-tail" div

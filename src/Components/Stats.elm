@@ -2,7 +2,7 @@ module Components.Stats exposing (..)
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Types exposing (Msg, StatDetails, Stats)
+import Model exposing (Msg, StatDetails, Stats)
 import Utils.Animation exposing (fadeAndRise)
 import Utils.Icon exposing (viewArrowUpIcon)
 

@@ -1,6 +1,6 @@
 module Utils.Position exposing (..)
 
-import Types exposing (Map, Position, Tile(..))
+import Model exposing (Map, Position, Tile(..))
 
 
 getNonWallTilePositions : Map -> List Position

@@ -4,7 +4,7 @@ import Command exposing (getNewPillAndTrimCommand)
 import Components.Snake
 import Components.Stats
 import Init exposing (init)
-import Types exposing (GameState(..), Model, Msg(..), Stats)
+import Model exposing (GameState(..), Model, Msg(..), Stats)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

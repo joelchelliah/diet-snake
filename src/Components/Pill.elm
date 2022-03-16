@@ -1,6 +1,6 @@
 module Components.Pill exposing (..)
 
-import Types exposing (Pill, PillColor(..), Position)
+import Model exposing (Pill, PillColor(..), Position)
 
 
 colors : List PillColor

@@ -1,7 +1,6 @@
 module Components.Snake exposing (..)
 
-import Config exposing (config)
-import Types exposing (Direction(..), Map, Pill, Position, Snake)
+import Model exposing (Direction(..), Map, Pill, Position, Snake, config)
 import Utils.Position exposing (getFreeTilePositions)
 
 
