@@ -1,10 +1,11 @@
 module Command exposing (getNewPillAndTrimCommand)
 
-import Pill
+import Components.Pill
+import Components.Snake
 import Random
-import Snake
 import Types exposing (Map, Msg(..), Pill, PillColor(..), Position, Snake)
-import Utils exposing (getFreeTilePositions, lookUpInListOrDefault)
+import Utils.ListExtra exposing (lookUpInListOrDefault)
+import Utils.Position exposing (getFreeTilePositions)
 
 
 getPositionGenerator : Snake -> Map -> Random.Generator Position
@@ -28,10 +29,10 @@ getColorGenerator maybePill =
         colors =
             case maybePill of
                 Nothing ->
-                    Pill.colors
+                    Components.Pill.colors
 
                 Just pill ->
-                    Pill.getAllColorsExceptPillColor pill
+                    Components.Pill.getAllColorsExceptPillColor pill
 
         indexGenerator =
             Random.int 0 (List.length colors - 1)
@@ -43,7 +44,7 @@ getRotationGenerator : Maybe Pill -> Random.Generator Float
 getRotationGenerator maybePill =
     let
         { min, max, multiplier } =
-            Pill.rotation
+            Components.Pill.rotation
 
         isCurrentPillRotation rotation =
             case maybePill of
@@ -58,7 +59,7 @@ getRotationGenerator maybePill =
         |> Random.map
             (\rot ->
                 if isCurrentPillRotation rot then
-                    rot - Pill.rotation.multiplier
+                    rot - Components.Pill.rotation.multiplier
 
                 else
                     rot
@@ -98,7 +99,7 @@ getNewPillAndTrimCommand snake pill map =
         trimCmd =
             Random.generate Trim (getTrimGenerator snake)
     in
-    if Snake.isOnPill pill snake then
+    if Components.Snake.isOnPill pill snake then
         Cmd.batch [ newPillCmd, trimCmd ]
 
     else if pill == Nothing then

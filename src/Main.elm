@@ -1,18 +1,18 @@
 module Main exposing (..)
 
-import Animation exposing (growAppear)
 import Browser
+import Components.Stats
+import Components.Tiles
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Icon exposing (CornerIcon(..), iconCss, viewArrowIcons, viewCornerIcons, viewGithubIcon)
 import Init exposing (init)
-import Stats
 import Subscription exposing (subscriptions)
-import Tiles
 import Types exposing (GameState(..), Model, Msg, Tile(..))
 import Update exposing (update)
-import Utils exposing (..)
+import Utils.Animation exposing (growAppear)
+import Utils.Icon exposing (CornerIcon(..), iconCss, viewArrowIcons, viewCornerIcons, viewGithubIcon)
+import Utils.ListExtra exposing (..)
 
 
 viewHeader : GameState -> Html Msg
@@ -108,8 +108,8 @@ view model =
     div [ class "game" ]
         [ iconCss
         , viewHeader model.state
-        , Tiles.view model
-        , Stats.view model.stats
+        , Components.Tiles.view model
+        , Components.Stats.view model.stats
         , viewModal model
         , viewGithub
         ]
@@ -118,7 +118,7 @@ view model =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init Stats.initDetails
+        { init = init Components.Stats.initDetails
         , update = update
         , view = view
         , subscriptions = subscriptions

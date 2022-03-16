@@ -1,4 +1,4 @@
-module Icon exposing (..)
+module Utils.Icon exposing (..)
 
 import FontAwesome.Attributes as Icon
 import FontAwesome.Brands as Icon

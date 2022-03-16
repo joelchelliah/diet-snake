@@ -1,9 +1,9 @@
 module Update exposing (update)
 
 import Command exposing (getNewPillAndTrimCommand)
+import Components.Snake
+import Components.Stats
 import Init exposing (init)
-import Snake
-import Stats
 import Types exposing (GameState(..), Model, Msg(..), Stats)
 
 
@@ -28,23 +28,23 @@ update msg ({ snake, state, pill, map, stats } as model) =
                     pause model
 
             KeyPress direction ->
-                ( { model | snake = Snake.turn direction snake }, Cmd.none )
+                ( { model | snake = Components.Snake.turn direction snake }, Cmd.none )
 
             Grow ->
-                ( { model | snake = Snake.grow stats.current.stepsTaken snake }, Cmd.none )
+                ( { model | snake = Components.Snake.grow stats.current.stepsTaken snake }, Cmd.none )
 
             Tick ->
                 let
                     newSnake =
-                        Snake.move snake
+                        Components.Snake.move snake
 
                     onPill =
-                        Snake.isOnPill pill newSnake
+                        Components.Snake.isOnPill pill newSnake
                 in
-                if Snake.isOnFreeTile map newSnake then
+                if Components.Snake.isOnFreeTile map newSnake then
                     ( { model
                         | snake = newSnake
-                        , stats = Stats.updateCurrent onPill 0 stats
+                        , stats = Components.Stats.updateCurrent onPill 0 stats
                       }
                     , getNewPillAndTrimCommand newSnake pill map
                     )
@@ -52,7 +52,7 @@ update msg ({ snake, state, pill, map, stats } as model) =
                 else
                     ( { model
                         | state = GameOver
-                        , stats = Stats.updateBest stats
+                        , stats = Components.Stats.updateBest stats
                       }
                     , Cmd.none
                     )
@@ -62,8 +62,8 @@ update msg ({ snake, state, pill, map, stats } as model) =
 
             Trim amount ->
                 ( { model
-                    | snake = Snake.trim snake amount
-                    , stats = Stats.updateCurrent False amount stats
+                    | snake = Components.Snake.trim snake amount
+                    , stats = Components.Stats.updateCurrent False amount stats
                   }
                 , Cmd.none
                 )

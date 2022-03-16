@@ -1,13 +1,13 @@
-module Tiles exposing (init, view)
+module Components.Tiles exposing (init, view)
 
-import Animation exposing (fadeAway, pulseAndTurn)
+import Components.Pill
+import Components.Snake
 import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (class)
-import Pill
-import Snake
 import String
 import Types exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..))
-import Utils exposing (getIndexInList)
+import Utils.Animation exposing (fadeAway, pulseAndTurn)
+import Utils.ListExtra exposing (getIndexInList)
 
 
 type alias Container msg =
@@ -30,7 +30,7 @@ makeTile className innerTile =
 
 makePill : Types.PillColor -> Float -> Html msg
 makePill color rotation =
-    pulseAndTurn rotation |> makeTile (String.join " " [ "pill", Pill.toString color ])
+    pulseAndTurn rotation |> makeTile (String.join " " [ "pill", Components.Pill.toString color ])
 
 
 fadeAwayDeadTiles : List Position -> Position -> Html msg
@@ -64,14 +64,14 @@ viewTile snake pill isGameOver tile =
                 else
                     placeTile.head
 
-            else if Snake.isTailHere snake pos then
+            else if Components.Snake.isTailHere snake pos then
                 if isGameOver then
                     placeTile.dead snake.tail pos
 
                 else
                     placeTile.tail
 
-            else if Pill.isHere pos pill then
+            else if Components.Pill.isHere pos pill then
                 case pill of
                     Nothing ->
                         span [] []
@@ -79,7 +79,7 @@ viewTile snake pill isGameOver tile =
                     Just { color, rotation } ->
                         placeTile.pill color rotation
 
-            else if Snake.isTrimmedTailHere snake pos then
+            else if Components.Snake.isTrimmedTailHere snake pos then
                 placeTile.dead snake.trimmed pos
 
             else

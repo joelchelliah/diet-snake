@@ -1,10 +1,10 @@
-module Stats exposing (..)
+module Components.Stats exposing (..)
 
-import Animation exposing (fadeAndRise)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
-import Icon exposing (viewArrowUpIcon)
 import Types exposing (Msg, StatDetails, Stats)
+import Utils.Animation exposing (fadeAndRise)
+import Utils.Icon exposing (viewArrowUpIcon)
 
 
 updateBest : Stats -> Stats

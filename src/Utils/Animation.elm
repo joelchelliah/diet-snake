@@ -1,4 +1,4 @@
-module Animation exposing (..)
+module Utils.Animation exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

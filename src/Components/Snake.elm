@@ -1,8 +1,8 @@
-module Snake exposing (..)
+module Components.Snake exposing (..)
 
 import Config exposing (config)
 import Types exposing (Direction(..), Map, Pill, Position, Snake)
-import Utils exposing (getFreeTilePositions)
+import Utils.Position exposing (getFreeTilePositions)
 
 
 grow : Int -> Snake -> Snake

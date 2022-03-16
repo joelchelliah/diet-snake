@@ -1,4 +1,4 @@
-module Pill exposing (..)
+module Components.Pill exposing (..)
 
 import Types exposing (Pill, PillColor(..), Position)
 
