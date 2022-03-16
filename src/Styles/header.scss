@@ -1,0 +1,41 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: $divider;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 1rem;
+
+  .icon {
+    font-size: 4rem;
+    margin: 0 1rem 0 4rem;
+  }
+
+  .title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 16rem;
+  }
+
+  .title {
+    @extend %blue-text;
+    font-size: 2rem;
+
+    .cancelled {
+      @extend %grey-text;
+      text-decoration: line-through;
+    }
+
+    .red {
+      @extend %red-text;
+    }
+  }
+
+  .subtitle {
+    @extend %grey-text;
+    display: flex;
+    font-style: italic;
+  }
+}

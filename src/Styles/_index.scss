@@ -1,0 +1,27 @@
+@import "base", "header", "modal", "stats", "tiles";
+
+body {
+  font-family: $default-font;
+  font-size: 1rem;
+  margin: 0 auto;
+  text-align: center;
+  color: #336;
+  width: $game-width;
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.github {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  padding-top: 1.5rem;
+  border-top: $divider;
+}

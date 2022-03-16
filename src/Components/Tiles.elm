@@ -5,7 +5,6 @@ import Components.Snake
 import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (class)
 import Model exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..))
-import String
 import Utils.Animation exposing (fadeAway, pulseAndTurn)
 import Utils.ListExtra exposing (getIndexInList)
 
@@ -14,39 +13,52 @@ type alias Container msg =
     List (Attribute msg) -> List (Html msg) -> Html msg
 
 
-makeTile : String -> Container msg -> Html msg
-makeTile className innerTile =
-    let
-        wrapInOuterTile tile =
-            div [ class "outer-tile" ] [ tile ]
-    in
-    case className of
-        "" ->
-            innerTile [] [] |> wrapInOuterTile
+type TileClass
+    = EmptyTile
+    | Tile String
 
-        name ->
-            innerTile [ class ("inner-tile " ++ name) ] [] |> wrapInOuterTile
+
+makeTile : Container msg -> TileClass -> Html msg
+makeTile tileContainer tileClass =
+    let
+        wrapInBackgroundTile tile =
+            div [ class "background-tile" ] [ tile ]
+    in
+    case tileClass of
+        EmptyTile ->
+            tileContainer [] [] |> wrapInBackgroundTile
+
+        Tile name ->
+            tileContainer [ class ("tile " ++ name) ] [] |> wrapInBackgroundTile
 
 
 makePill : Model.PillColor -> Float -> Html msg
 makePill color rotation =
-    pulseAndTurn rotation |> makeTile (String.join " " [ "pill", Components.Pill.toString color ])
+    let
+        pillColor =
+            Components.Pill.toString color
+    in
+    Tile ("pill " ++ pillColor) |> makeTile (pulseAndTurn rotation)
 
 
-fadeAwayDeadTiles : List Position -> Position -> Html msg
-fadeAwayDeadTiles tilePositions currentTilePosition =
-    -- The current tile position is only used for offsetting the fade delay
-    tilePositions |> getIndexInList currentTilePosition |> fadeAway |> makeTile "snake-dead"
+makeDeadTile : List Position -> Position -> Html msg
+makeDeadTile tilePositions currentTilePosition =
+    -- The currentTilePosition is only used to offset the fade animation delay
+    let
+        fadeAwayContainer =
+            tilePositions |> getIndexInList currentTilePosition |> fadeAway
+    in
+    Tile "snake dead" |> makeTile fadeAwayContainer
 
 
-placeTile : { head : Html msg, tail : Html msg, dead : List Position -> Position -> Html msg, pill : Model.PillColor -> Float -> Html msg, wall : Html msg, open : Html msg }
+placeTile : { head : Html msg, tail : Html msg, dead : List Position -> Position -> Html msg, pill : Model.PillColor -> Float -> Html msg, wall : Html msg, empty : Html msg }
 placeTile =
-    { head = makeTile "snake-head" div
-    , tail = makeTile "snake-tail" div
-    , dead = fadeAwayDeadTiles
+    { head = Tile "snake head" |> makeTile div
+    , tail = Tile "snake tail" |> makeTile div
+    , wall = Tile "wall" |> makeTile div
+    , dead = makeDeadTile
     , pill = makePill
-    , wall = makeTile "wall" div
-    , open = makeTile "" span
+    , empty = makeTile span EmptyTile
     }
 
 
@@ -83,7 +95,7 @@ viewTile snake pill isGameOver tile =
                 placeTile.dead snake.trimmed pos
 
             else
-                placeTile.open
+                placeTile.empty
 
 
 init : Int -> Int -> Map

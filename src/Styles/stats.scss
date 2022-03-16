@@ -1,0 +1,45 @@
+.stats-overview {
+  display: flex;
+  justify-content: space-between;
+  font-family: $monospace-font;
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+.stats-divider {
+  width: 1px;
+  height: inherit;
+  background-color: $divider-color;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  min-width: 16.5rem;
+
+  .stat-and-arrow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .stat {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      min-width: 15rem;
+    }
+
+    .arrow-up {
+      margin: 0 0.5rem;
+      position: relative;
+      width: 0.75rem;
+    }
+
+    .highlight {
+      @extend %green-text;
+      font-weight: 800;
+      font-style: italic;
+    }
+  }
+}

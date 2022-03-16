@@ -18,31 +18,28 @@ import Utils.ListExtra exposing (..)
 viewHeader : GameState -> Html Msg
 viewHeader state =
     let
-        titleText =
+        title =
             if state == GameOver then
-                span [ class "blue-text" ]
-                    [ span [ class "red-text" ] [ text "D" ]
-                    , s [ class "grey-text" ] [ text "iet" ]
-                    , span [ class "red-text" ] [ text "ead " ]
+                div [ class "title" ]
+                    [ span [ class "red" ] [ text "D" ]
+                    , span [ class "cancelled" ] [ text "iet" ]
+                    , span [ class "red" ] [ text "ead " ]
                     , text "Snake"
                     ]
 
             else
-                span [ class "blue-text" ] [ text "Diet Snake" ]
+                div [ class "title" ] [ text "Diet Snake" ]
 
-        subTitleText =
+        subTitle =
             if state == GameOver then
-                text "Whoops! ...Try another diet?"
+                div [ class "subtitle" ] [ text "Whoops! ...Try another diet?" ]
 
             else
-                text "The totally backward snake game!"
+                div [ class "subtitle" ] [ text "The totally backward snake game!" ]
     in
     div [ class "header" ]
         [ div [ class "icon" ] [ text "🐍" ]
-        , div [ class "titles" ]
-            [ div [ class "title" ] [ titleText ]
-            , div [ class "subtitle" ] [ subTitleText ]
-            ]
+        , div [ class "title-container" ] [ title, subTitle ]
         ]
 
 
@@ -50,7 +47,7 @@ viewPressEnterTo : String -> Html Msg
 viewPressEnterTo reason =
     div []
         [ text "Press "
-        , b [] [ i [ class "blue-text" ] [ text "Enter" ] ]
+        , b [] [ i [ class "enter" ] [ text "Enter" ] ]
         , text (" to " ++ reason)
         ]
 

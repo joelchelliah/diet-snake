@@ -1,0 +1,80 @@
+@use "sass:color";
+
+$tile-border: 0.125rem;
+$tile-size: 1rem;
+$row-height: $tile-size + $tile-border + $tile-border;
+
+%tile-base {
+  border: $tile-border solid;
+  width: $tile-size;
+  height: $tile-size;
+}
+
+@mixin colored-tile($color, $darken: -50%, $saturate: 50%) {
+  @extend %tile-base;
+  $lighter: color.scale($color, $lightness: 50%);
+  $darker: color.scale($color, $lightness: $darken);
+  $highlight: color.scale($lighter, $saturation: $saturate);
+  $shading: color.scale($darker, $saturation: -50%);
+  background-color: $color;
+  border-color: $highlight $shading $shading $highlight;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  height: $row-height;
+}
+
+/* Empty (non-wall) tile, and also the background tile behind all other tiles. */
+.background-tile {
+  display: inline-block;
+  @include colored-tile(#ddf, -20%);
+}
+
+.tile {
+  display: block;
+  margin: -$tile-border;
+
+  &.wall {
+    @include colored-tile(#aaa, -60%, 0%);
+  }
+
+  &.snake {
+    &.head {
+      @include colored-tile(#922);
+    }
+
+    &.tail {
+      @include colored-tile(#d66);
+    }
+
+    &.dead {
+      @include colored-tile(#753);
+    }
+  }
+
+  &.pill {
+    position: relative;
+
+    &.green {
+      @include colored-tile(#5b5);
+    }
+
+    &.blue {
+      @include colored-tile(#77f);
+    }
+
+    &.yellow {
+      @include colored-tile(#dd5);
+    }
+
+    &.pink {
+      @include colored-tile(#d6d);
+    }
+
+    &.teal {
+      @include colored-tile(#4cc);
+    }
+  }
+}

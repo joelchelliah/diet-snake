@@ -1,0 +1,24 @@
+$default-font: "Source Sans Pro", "Trebuchet MS", "Lucida Grande",
+  "Bitstream Vera Sans", "Helvetica Neue", sans-serif;
+$monospace-font: "Monaco", "Fira Mono", "DejaVu Sans Mono", "Menlo", monospace;
+
+$divider-color: #ddd;
+$divider: solid 0.0625rem $divider-color;
+
+$game-width: 40rem;
+
+%red-text {
+  color: #a33;
+}
+
+%blue-text {
+  color: #55c;
+}
+
+%green-text {
+  color: #193;
+}
+
+%grey-text {
+  color: #999;
+}
