@@ -51,14 +51,26 @@ makeDeadTile tilePositions currentTilePosition =
     Tile "snake dead" |> makeTile fadeAwayContainer
 
 
-makeDigestTile : Int -> Html msg
-makeDigestTile index =
+makeHeadTile : Snake -> Html msg
+makeHeadTile snake =
+    if Snake.isAtDigestingStep 2 snake then
+        Tile "snake head bulge-1" |> makeTile div
+
+    else if Snake.isAtDigestingStep 3 snake then
+        Tile "snake head bulge-2" |> makeTile div
+
+    else
+        Tile "snake head" |> makeTile div
+
+
+makeTailDigestTile : Snake -> Int -> Html msg
+makeTailDigestTile snake index =
     let
         suffix =
             index + 1 |> String.fromInt
 
         validSuffixes =
-            config.digestBulgeLength |> List.range 1 |> List.map String.fromInt
+            Snake.getDigestBulgeLength snake |> List.range 1 |> List.map String.fromInt
     in
     if List.member suffix validSuffixes then
         Tile ("snake digest bulge-" ++ suffix) |> makeTile div
@@ -68,28 +80,14 @@ makeDigestTile index =
 
 
 placeTile =
-    { head = Tile "snake head" |> makeTile div
-    , bigHead = Tile "snake head bulge-1" |> makeTile div
-    , biggerHead = Tile "snake head bulge-2" |> makeTile div
+    { head = makeHeadTile
     , tail = Tile "snake tail" |> makeTile div
     , wall = Tile "wall" |> makeTile div
-    , digest = makeDigestTile
+    , tailDigest = makeTailDigestTile
     , dead = makeDeadTile
     , pill = makePillTile
     , empty = makeTile span EmptyTile
     }
-
-
-placeHeadTile : Snake -> Html msg
-placeHeadTile snake =
-    if snake.digestingProgress < 2 * Snake.getDigestRate snake then
-        placeTile.biggerHead
-
-    else if snake.digestingProgress < 3 * Snake.getDigestRate snake then
-        placeTile.bigHead
-
-    else
-        placeTile.head
 
 
 placeTailTile : Snake -> Position -> Html a
@@ -99,7 +97,8 @@ placeTailTile snake currentTilePosition =
             Snake.getCurrentlyDigestingTailPortion snake
     in
     if List.member currentTilePosition digestingPositions then
-        getIndexInListOrDefault currentTilePosition 1337 digestingPositions |> placeTile.digest
+        getIndexInListOrDefault currentTilePosition 1337 digestingPositions
+            |> placeTile.tailDigest snake
 
     else
         placeTile.tail
@@ -117,7 +116,7 @@ viewTile snake pill isGameOver tile =
                     placeTile.dead [ pos ] pos
 
                 else
-                    placeHeadTile snake
+                    placeTile.head snake
 
             else if Snake.isTailHere snake pos then
                 if isGameOver then

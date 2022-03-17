@@ -97,6 +97,6 @@ config =
     , gameSpeed = 90 -- Lower number -> faster
     , growthStartAt = 10 -- Number of steps
     , growthRate = 180 -- Number of milliseconds between
-    , digestBaseRate = 2 -- Base number of tail tiles to step through each Tick
-    , digestBulgeLength = 5 -- Number of tail tiles to bulge
+    , digestRate = 2 -- Number of tail tiles to step through each Tick
+    , digestLength = 20 -- Number of tiles to show digesting
     }

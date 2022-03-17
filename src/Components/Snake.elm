@@ -4,6 +4,18 @@ import Model exposing (Direction(..), Map, Pill, Position, Snake, config)
 import Utils.Position exposing (getFreeTilePositions)
 
 
+disabledDigestingProgress : number
+disabledDigestingProgress =
+    -- Disables digesting state without requiring an extra field
+    -1
+
+
+getDigestBulgeLength : Snake -> Int
+getDigestBulgeLength snake =
+    -- To slowly reduce bulge when nearing end of progress
+    config.digestLength - snake.digestingProgress |> clamp 1 5
+
+
 validateDirection : Direction -> Direction -> Direction
 validateDirection currentDirection newDirection =
     let
@@ -16,11 +28,6 @@ validateDirection currentDirection newDirection =
 
     else
         currentDirection
-
-
-getDigestRate : Snake -> Int
-getDigestRate { tail } =
-    config.digestBaseRate + List.length tail // 20
 
 
 grow : Int -> Snake -> Snake
@@ -84,10 +91,10 @@ digest onPill ({ digestingProgress } as snake) =
         { snake | digestingProgress = 0 }
 
     else if isDigesting snake then
-        { snake | digestingProgress = digestingProgress + getDigestRate snake }
+        { snake | digestingProgress = digestingProgress + config.digestRate }
 
     else
-        snake
+        { snake | digestingProgress = disabledDigestingProgress }
 
 
 trim : Snake -> Int -> Snake
@@ -164,21 +171,26 @@ isOnPill pill { head, tail } =
 
 
 isDigesting : Snake -> Bool
-isDigesting { tail, digestingProgress } =
-    digestingProgress < List.length tail
+isDigesting { digestingProgress } =
+    digestingProgress >= 0 && digestingProgress <= config.digestLength
+
+
+isAtDigestingStep : Int -> Snake -> Bool
+isAtDigestingStep step snake =
+    isDigesting snake && snake.digestingProgress < step * config.digestRate
 
 
 getCurrentlyDigestingTailPortion : Snake -> List Position
-getCurrentlyDigestingTailPortion { tail, digestingProgress } =
+getCurrentlyDigestingTailPortion ({ tail, digestingProgress } as snake) =
     let
-        maxIndex =
-            List.length tail - 1
+        bulge =
+            getDigestBulgeLength snake
     in
-    if digestingProgress > maxIndex then
-        []
+    if isDigesting snake then
+        List.drop digestingProgress tail |> List.take bulge
 
     else
-        List.drop digestingProgress tail |> List.take config.digestBulgeLength
+        []
 
 
 init : Int -> Snake
@@ -200,5 +212,5 @@ init tailLength =
     , direction = Up
     , isGrowing = False
     , canGrow = False
-    , digestingProgress = 1337
+    , digestingProgress = disabledDigestingProgress
     }
