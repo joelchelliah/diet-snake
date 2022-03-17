@@ -18,6 +18,11 @@ validateDirection currentDirection newDirection =
         currentDirection
 
 
+getDigestRate : Snake -> Int
+getDigestRate { tail } =
+    config.digestBaseRate + List.length tail // 20
+
+
 grow : Int -> Snake -> Snake
 grow stepsTaken snake =
     { snake
@@ -79,7 +84,7 @@ digest onPill ({ digestingProgress } as snake) =
         { snake | digestingProgress = 0 }
 
     else if isDigesting snake then
-        { snake | digestingProgress = digestingProgress + config.digestRate }
+        { snake | digestingProgress = digestingProgress + getDigestRate snake }
 
     else
         snake
@@ -195,5 +200,5 @@ init tailLength =
     , direction = Up
     , isGrowing = False
     , canGrow = False
-    , digestingProgress = tailLength
+    , digestingProgress = 1337
     }

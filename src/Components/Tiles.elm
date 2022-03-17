@@ -69,6 +69,8 @@ makeDigestTile index =
 
 placeTile =
     { head = Tile "snake head" |> makeTile div
+    , bigHead = Tile "snake head bulge-1" |> makeTile div
+    , biggerHead = Tile "snake head bulge-2" |> makeTile div
     , tail = Tile "snake tail" |> makeTile div
     , wall = Tile "wall" |> makeTile div
     , digest = makeDigestTile
@@ -76,6 +78,18 @@ placeTile =
     , pill = makePillTile
     , empty = makeTile span EmptyTile
     }
+
+
+placeHeadTile : Snake -> Html msg
+placeHeadTile snake =
+    if snake.digestingProgress < 2 * Snake.getDigestRate snake then
+        placeTile.biggerHead
+
+    else if snake.digestingProgress < 3 * Snake.getDigestRate snake then
+        placeTile.bigHead
+
+    else
+        placeTile.head
 
 
 placeTailTile : Snake -> Position -> Html a
@@ -103,7 +117,7 @@ viewTile snake pill isGameOver tile =
                     placeTile.dead [ pos ] pos
 
                 else
-                    placeTile.head
+                    placeHeadTile snake
 
             else if Snake.isTailHere snake pos then
                 if isGameOver then
