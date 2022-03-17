@@ -2,10 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Browser.Events exposing (onKeyDown)
-import Components.Hud
-import Components.Snake
-import Components.Stats
-import Components.Tiles
+import Components.Hud as Hud
+import Components.Snake as Snake
+import Components.Stats as Stats
+import Components.Tiles as Tiles
 import Html exposing (Html, div)
 import Html.Attributes exposing (class)
 import Json.Decode as Decode
@@ -17,11 +17,11 @@ import Utils.Icon exposing (CornerIcon(..), iconCss)
 
 init : StatDetails -> () -> ( Model, Cmd Msg )
 init bestStats () =
-    ( { snake = Components.Snake.init 5
+    ( { snake = Snake.init 5
       , pill = Nothing
       , state = Init
-      , map = Components.Tiles.init config.gameWidth config.gameHeight
-      , stats = Components.Stats.init bestStats
+      , map = Tiles.init config.gameWidth config.gameHeight
+      , stats = Stats.init bestStats
       }
     , Cmd.none
     )
@@ -48,23 +48,23 @@ update msg ({ snake, state, pill, map, stats } as model) =
                     ( { model | state = Paused }, Cmd.none )
 
             KeyPress direction ->
-                ( { model | snake = Components.Snake.turn direction snake }, Cmd.none )
+                ( { model | snake = Snake.turn direction snake }, Cmd.none )
 
             Grow ->
-                ( { model | snake = Components.Snake.grow stats.current.stepsTaken snake }, Cmd.none )
+                ( { model | snake = Snake.grow stats.current.stepsTaken snake }, Cmd.none )
 
             Tick ->
                 let
                     newSnake =
-                        Components.Snake.move snake
+                        Snake.move snake
 
                     onPill =
-                        Components.Snake.isOnPill pill newSnake
+                        Snake.isOnPill pill newSnake
                 in
-                if Components.Snake.isOnFreeTile map newSnake then
+                if Snake.isOnFreeTile map newSnake then
                     ( { model
-                        | snake = newSnake
-                        , stats = Components.Stats.updateCurrent onPill 0 stats
+                        | snake = Snake.digest onPill newSnake
+                        , stats = Stats.updateCurrent onPill 0 stats
                       }
                     , getNewPillAndTrimCommand newSnake pill map
                     )
@@ -72,7 +72,7 @@ update msg ({ snake, state, pill, map, stats } as model) =
                 else
                     ( { model
                         | state = GameOver
-                        , stats = Components.Stats.updateBest stats
+                        , stats = Stats.updateBest stats
                       }
                     , Cmd.none
                     )
@@ -82,8 +82,8 @@ update msg ({ snake, state, pill, map, stats } as model) =
 
             Trim amount ->
                 ( { model
-                    | snake = Components.Snake.trim snake amount
-                    , stats = Components.Stats.updateCurrent False amount stats
+                    | snake = Snake.trim snake amount
+                    , stats = Stats.updateCurrent False amount stats
                   }
                 , Cmd.none
                 )
@@ -93,11 +93,11 @@ view : Model -> Html Msg
 view model =
     div [ class "game" ]
         [ iconCss
-        , Components.Hud.viewHeader model
-        , Components.Tiles.view model
-        , Components.Stats.view model.stats
-        , Components.Hud.viewModal model
-        , Components.Hud.viewFooter
+        , Hud.viewHeader model
+        , Tiles.view model
+        , Stats.view model.stats
+        , Hud.viewModal model
+        , Hud.viewFooter
         ]
 
 
@@ -122,7 +122,7 @@ subscriptions model =
 main : Program () Model Msg
 main =
     Browser.element
-        { init = init Components.Stats.initDetails
+        { init = init Stats.initDetails
         , update = update
         , view = view
         , subscriptions = subscriptions

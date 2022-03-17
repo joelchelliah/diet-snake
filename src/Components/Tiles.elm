@@ -1,12 +1,12 @@
 module Components.Tiles exposing (init, view)
 
-import Components.Pill
-import Components.Snake
+import Components.Pill as Pill
+import Components.Snake as Snake
 import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (class)
-import Model exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..))
+import Model exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..), config)
 import Utils.Animation exposing (fadeAway, pulseAndTurn)
-import Utils.List exposing (getIndexInList)
+import Utils.List exposing (getIndexInListOrDefault)
 
 
 type alias Container msg =
@@ -32,11 +32,11 @@ makeTile tileContainer tileClass =
             tileContainer [ class ("tile " ++ name) ] [] |> wrapInBackgroundTile
 
 
-makePill : Model.PillColor -> Float -> Html msg
-makePill color rotation =
+makePillTile : Model.PillColor -> Float -> Html msg
+makePillTile color rotation =
     let
         pillColor =
-            Components.Pill.toString color
+            Pill.toString color
     in
     Tile ("pill " ++ pillColor) |> makeTile (pulseAndTurn rotation)
 
@@ -46,20 +46,49 @@ makeDeadTile tilePositions currentTilePosition =
     -- The currentTilePosition is only used to offset the fade animation delay
     let
         fadeAwayContainer =
-            tilePositions |> getIndexInList currentTilePosition |> fadeAway
+            tilePositions |> getIndexInListOrDefault currentTilePosition 0 |> fadeAway
     in
     Tile "snake dead" |> makeTile fadeAwayContainer
 
 
-placeTile : { head : Html msg, tail : Html msg, dead : List Position -> Position -> Html msg, pill : Model.PillColor -> Float -> Html msg, wall : Html msg, empty : Html msg }
+makeDigestTile : Int -> Html msg
+makeDigestTile index =
+    let
+        suffix =
+            index + 1 |> String.fromInt
+
+        validSuffixes =
+            config.digestBulgeLength |> List.range 1 |> List.map String.fromInt
+    in
+    if List.member suffix validSuffixes then
+        Tile ("snake digest bulge-" ++ suffix) |> makeTile div
+
+    else
+        Tile "snake digest" |> makeTile div
+
+
 placeTile =
     { head = Tile "snake head" |> makeTile div
     , tail = Tile "snake tail" |> makeTile div
     , wall = Tile "wall" |> makeTile div
+    , digest = makeDigestTile
     , dead = makeDeadTile
-    , pill = makePill
+    , pill = makePillTile
     , empty = makeTile span EmptyTile
     }
+
+
+placeTailTile : Snake -> Position -> Html a
+placeTailTile snake currentTilePosition =
+    let
+        digestingPositions =
+            Snake.getCurrentlyDigestingTailPortion snake
+    in
+    if List.member currentTilePosition digestingPositions then
+        getIndexInListOrDefault currentTilePosition 1337 digestingPositions |> placeTile.digest
+
+    else
+        placeTile.tail
 
 
 viewTile : Snake -> Maybe Pill -> Bool -> Tile -> Html Msg
@@ -76,14 +105,14 @@ viewTile snake pill isGameOver tile =
                 else
                     placeTile.head
 
-            else if Components.Snake.isTailHere snake pos then
+            else if Snake.isTailHere snake pos then
                 if isGameOver then
                     placeTile.dead snake.tail pos
 
                 else
-                    placeTile.tail
+                    placeTailTile snake pos
 
-            else if Components.Pill.isHere pos pill then
+            else if Pill.isHere pos pill then
                 case pill of
                     Nothing ->
                         span [] []
@@ -91,7 +120,7 @@ viewTile snake pill isGameOver tile =
                     Just { color, rotation } ->
                         placeTile.pill color rotation
 
-            else if Components.Snake.isTrimmedTailHere snake pos then
+            else if Snake.isTrimmedTailHere snake pos then
                 placeTile.dead snake.trimmed pos
 
             else

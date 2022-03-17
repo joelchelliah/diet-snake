@@ -35,6 +35,7 @@ type alias Snake =
     , direction : Direction
     , isGrowing : Bool
     , canGrow : Bool -- To prevent snake from growing immediately
+    , digestingProgress : Int -- Index of first digesting tile
     }
 
 
@@ -90,11 +91,12 @@ type Msg
     | Trim Int
 
 
-config : { gameWidth : number, gameHeight : number, gameSpeed : number, growthStartAt : number, growthRate : number }
 config =
     { gameWidth = 32
     , gameHeight = 24
     , gameSpeed = 90 -- Lower number -> faster
-    , growthStartAt = 10
-    , growthRate = 180
+    , growthStartAt = 10 -- Number of steps
+    , growthRate = 180 -- Number of milliseconds between
+    , digestRate = 3 -- Number of tail tiles to step through each time
+    , digestBulgeLength = 5 -- Number of tail tiles to bulge
     }

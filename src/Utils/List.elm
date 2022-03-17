@@ -15,15 +15,15 @@ lookUpInListOrDefault list default i =
             value
 
 
-getIndexInList : a -> List a -> Int
-getIndexInList a list =
+getIndexInListOrDefault : a -> Int -> List a -> Int
+getIndexInListOrDefault a default list =
     case list of
         head :: tail ->
             if head == a then
                 0
 
             else
-                1 + getIndexInList a tail
+                1 + getIndexInListOrDefault a default tail
 
         _ ->
-            0
+            default

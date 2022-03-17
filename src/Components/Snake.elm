@@ -4,6 +4,20 @@ import Model exposing (Direction(..), Map, Pill, Position, Snake, config)
 import Utils.Position exposing (getFreeTilePositions)
 
 
+validateDirection : Direction -> Direction -> Direction
+validateDirection currentDirection newDirection =
+    let
+        isNewDirectionValid =
+            ((newDirection == Up || newDirection == Down) && (currentDirection == Left || currentDirection == Right))
+                || ((newDirection == Left || newDirection == Right) && (currentDirection == Up || currentDirection == Down))
+    in
+    if isNewDirectionValid then
+        newDirection
+
+    else
+        currentDirection
+
+
 grow : Int -> Snake -> Snake
 grow stepsTaken snake =
     { snake
@@ -57,6 +71,18 @@ turn newDirection snake =
             validateDirection snake.direction newDirection
     in
     { syncedSnake | direction = validNewDirection }
+
+
+digest : Bool -> Snake -> Snake
+digest onPill ({ digestingProgress } as snake) =
+    if onPill then
+        { snake | digestingProgress = 0 }
+
+    else if isDigesting snake then
+        { snake | digestingProgress = digestingProgress + config.digestRate }
+
+    else
+        snake
 
 
 trim : Snake -> Int -> Snake
@@ -132,18 +158,36 @@ isOnPill pill { head, tail } =
             List.any (\pos -> pos == position) (head :: tail)
 
 
+isDigesting : Snake -> Bool
+isDigesting { tail, digestingProgress } =
+    digestingProgress < List.length tail
+
+
+getCurrentlyDigestingTailPortion : Snake -> List Position
+getCurrentlyDigestingTailPortion { tail, digestingProgress } =
+    let
+        maxIndex =
+            List.length tail - 1
+    in
+    if digestingProgress > maxIndex then
+        []
+
+    else
+        List.drop digestingProgress tail |> List.take config.digestBulgeLength
+
+
 init : Int -> Snake
-init maxLength =
+init tailLength =
     let
         head =
             ( config.gameWidth // 2, config.gameHeight // 2 )
 
-        createTail length =
-            if length == maxLength then
+        createTail fromLength =
+            if fromLength == tailLength then
                 []
 
             else
-                Tuple.mapSecond (\y -> y + length) head :: createTail (length + 1)
+                Tuple.mapSecond (\y -> y + fromLength) head :: createTail (fromLength + 1)
     in
     { head = head
     , tail = createTail 0
@@ -151,18 +195,5 @@ init maxLength =
     , direction = Up
     , isGrowing = False
     , canGrow = False
+    , digestingProgress = tailLength
     }
-
-
-validateDirection : Direction -> Direction -> Direction
-validateDirection currentDirection newDirection =
-    let
-        isNewDirectionValid =
-            ((newDirection == Up || newDirection == Down) && (currentDirection == Left || currentDirection == Right))
-                || ((newDirection == Left || newDirection == Right) && (currentDirection == Up || currentDirection == Down))
-    in
-    if isNewDirectionValid then
-        newDirection
-
-    else
-        currentDirection
