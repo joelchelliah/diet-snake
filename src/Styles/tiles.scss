@@ -1,5 +1,3 @@
-@use "sass:color";
-
 $tile-border: 0.125rem;
 $tile-size: 1rem;
 $row-height: calc($tile-size + 2 * $tile-border);
@@ -7,52 +5,53 @@ $row-height: calc($tile-size + 2 * $tile-border);
 $snake-head-color: #922;
 $snake-tail-color: #d66;
 
+// Config for generating animation classes for bulging snake HEAD
+$head-bulge-config: (
+  "color": $snake-head-color,
+  "bulges": (
+    "1": (
+      "size": 0.75rem,
+      "brightness": 30%,
+    ),
+    "2": (
+      "size": 0.5rem,
+      "brightness": 15%,
+    ),
+  ),
+);
+
+// Config for generating animation classes for bulging snake TAIL
+// Number of bulge entries must correspond with Metabolism.maxBulgeLength
+$tail-bulge-config: (
+  "color": $snake-tail-color,
+  "bulges": (
+    "1": (
+      "size": 0.3125rem,
+      "brightness": 10%,
+      "degrees": 5deg,
+    ),
+    "2": (
+      "size": 0.625rem,
+      "brightness": 20%,
+      "degrees": 10deg,
+    ),
+    "3": (
+      "size": 0.4375rem,
+      "brightness": 15%,
+      "degrees": 6deg,
+    ),
+    "4": (
+      "size": 0.25rem,
+      "brightness": 10%,
+      "degrees": 4deg,
+    ),
+  ),
+);
+
 %tile-base {
   border: $tile-border solid;
   width: $tile-size;
   height: $tile-size;
-}
-
-@mixin colored-tile($color, $darken: -50%, $saturate: 50%) {
-  @extend %tile-base;
-
-  $lighter: color.scale($color, $lightness: 50%);
-  $darker: color.scale($color, $lightness: $darken);
-  $highlight: color.scale($lighter, $saturation: $saturate);
-  $shading: color.scale($darker, $saturation: -50%);
-
-  background-color: $color;
-  border-color: $highlight $shading $shading $highlight;
-}
-
-@mixin rotate($degrees) {
-  -webkit-transform: rotate($degrees);
-  -moz-transform: rotate($degrees);
-  -ms-transform: rotate($degrees);
-  -o-transform: rotate($degrees);
-  transform: rotate($degrees);
-}
-
-@mixin rotate-per-direction($degrees) {
-  &.clockwise {
-    @include rotate($degrees);
-  }
-
-  &.counter-clockwise {
-    @include rotate(-($degrees));
-  }
-}
-
-@mixin bulging-tile($bulge, $brighten, $color: $snake-tail-color) {
-  $bulgeColor: color.scale($color, $lightness: $brighten);
-
-  @include colored-tile($bulgeColor);
-
-  position: relative;
-  width: calc($tile-size + $bulge);
-  height: calc($tile-size + $bulge);
-  right: calc($bulge / 2);
-  bottom: calc($bulge / 2);
 }
 
 .row {
@@ -78,75 +77,11 @@ $snake-tail-color: #d66;
 
   &.snake {
     &.head {
-      @include colored-tile($snake-head-color);
-
-      &.bulge-1 {
-        @include bulging-tile(0.75rem, 30%, $snake-head-color);
-      }
-
-      &.bulge-2 {
-        @include bulging-tile(0.5rem, 15%, $snake-head-color);
-      }
+      @include bulging-tile($head-bulge-config);
     }
 
     &.tail {
-      @include colored-tile($snake-tail-color);
-
-      &.bulge-1 {
-        // 5
-        @include bulging-tile(0.3125rem, 10%);
-        @include rotate-per-direction(5deg);
-
-        // &.clockwise {
-        //   @include rotate(5deg);
-        // }
-
-        // &.counter-clockwise {
-        //   @include rotate(-5deg);
-        // }
-      }
-
-      &.bulge-2 {
-        // 10
-        @include bulging-tile(0.625rem, 20%);
-        @include rotate-per-direction(10deg);
-
-        // &.clockwise {
-        //   @include rotate(10deg);
-        // }
-
-        // &.counter-clockwise {
-        //   @include rotate(-10deg);
-        // }
-      }
-
-      &.bulge-3 {
-        // 7
-        @include bulging-tile(0.4375rem, 15%);
-        @include rotate-per-direction(6deg);
-
-        // &.clockwise {
-        //   @include rotate(6deg);
-        // }
-
-        // &.counter-clockwise {
-        //   @include rotate(-6deg);
-        // }
-      }
-
-      &.bulge-4 {
-        // 4
-        @include bulging-tile(0.25rem, 10%);
-        @include rotate-per-direction(4deg);
-
-        // &.clockwise {
-        //   @include rotate(4deg);
-        // }
-
-        // &.counter-clockwise {
-        //   @include rotate(4deg);
-        // }
-      }
+      @include bulging-tile($tail-bulge-config);
     }
 
     &.dead {

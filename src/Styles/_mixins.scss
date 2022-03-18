@@ -1,0 +1,88 @@
+@use "sass:color";
+@use "sass:map";
+
+// - - - - - - - - - - - - - - - - -
+// - - - - - - - Tiles - - - - - - -
+// - - - - - - - - - - - - - - - - -
+
+@mixin colored-tile($color, $darken: -50%, $saturate: 50%) {
+  @extend %tile-base;
+
+  $lighter: color.scale($color, $lightness: 50%);
+  $darker: color.scale($color, $lightness: $darken);
+  $highlight: color.scale($lighter, $saturation: $saturate);
+  $shading: color.scale($darker, $saturation: -50%);
+
+  background-color: $color;
+  border-color: $highlight $shading $shading $highlight;
+}
+
+@mixin rotate($degrees) {
+  -webkit-transform: rotate($degrees);
+  -moz-transform: rotate($degrees);
+  -ms-transform: rotate($degrees);
+  -o-transform: rotate($degrees);
+  transform: rotate($degrees);
+}
+
+@mixin bulging-tile($config) {
+  $color: map.get($config, "color");
+  $bulges: map.get($config, "bulges");
+
+  @include colored-tile($color);
+
+  @each $bulge-class, $bulge in $bulges {
+    &.bulge-#{$bulge-class} {
+      // Boost bulging tile size
+      $bulge-size: map.get($bulge, "size");
+
+      position: relative;
+      width: calc($tile-size + $bulge-size);
+      height: calc($tile-size + $bulge-size);
+      right: calc($bulge-size / 2);
+      bottom: calc($bulge-size / 2);
+
+      // Brighten bulging tile color
+      $bulge-brightness: map.get($bulge, "brightness");
+      $bulge-color: color.scale($color, $lightness: $bulge-brightness);
+
+      @include colored-tile($bulge-color);
+
+      // Rotate bulging tile, if degrees are provided in config
+      $bulge-degrees: map.get($bulge, "degrees");
+      @if $bulge-degrees {
+        &.clockwise {
+          @include rotate($bulge-degrees);
+        }
+
+        &.counter-clockwise {
+          @include rotate(-($bulge-degrees));
+        }
+      }
+    }
+  }
+}
+
+// - - - - - - - - - - - - - - - - -
+// - - - - - - - Modal - - - - - - -
+// - - - - - - - - - - - - - - - - -
+
+@mixin box-shadow($x-axis, $y-axis, $blur, $color) {
+  -webkit-box-shadow: $x-axis $y-axis $blur $color;
+  -moz-box-shadow: $x-axis $y-axis $blur $color;
+  box-shadow: $x-axis $y-axis $blur $color;
+}
+
+@mixin corner-icon($up, $left) {
+  position: absolute;
+  @if $up {
+    top: 0.25rem;
+  } @else {
+    bottom: 0.25rem;
+  }
+  @if $left {
+    left: 0.5rem;
+  } @else {
+    right: 0.5rem;
+  }
+}

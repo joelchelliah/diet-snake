@@ -1,4 +1,4 @@
-@import "base", "header", "modal", "stats", "tiles";
+@import "base", "mixins", "header", "modal", "stats", "tiles";
 
 body {
   font-family: $default-font;
