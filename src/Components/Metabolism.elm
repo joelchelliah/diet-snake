@@ -5,21 +5,21 @@ import Html exposing (progress)
 import Model exposing (BulgeRotation(..), Metabolism)
 
 
-maxBuglgeLength : number
-maxBuglgeLength =
+maxBulgeLength : number
+maxBulgeLength =
     -- Bulge size. Needs corresponding css classes (bulge-n).
     4
 
 
 digestLength : number
 digestLength =
-    -- Number of tail tiles to visualise on
-    20
+    -- Number of tail tiles to visualise the bulge on.
+    26
 
 
 initialRate : number
 initialRate =
-    -- Number of tail tiles to step through at a time
+    -- Number of tail tiles to step through at a time.
     2
 
 
@@ -49,7 +49,7 @@ digest onPill ({ progress, bulgeRotation, isActive, rate } as metabolism) =
     if onPill then
         { metabolism | progress = 0, rate = initialRate, isActive = True }
 
-    else if progress == digestLength then
+    else if progress >= digestLength then
         { metabolism | isActive = False }
 
     else if isActive then
@@ -65,15 +65,25 @@ digest onPill ({ progress, bulgeRotation, isActive, rate } as metabolism) =
 getBulgeLength : Metabolism -> Int
 getBulgeLength { progress } =
     -- To slowly reduce bulge when nearing end of progress
-    digestLength - progress |> clamp 1 maxBuglgeLength
+    let
+        softener =
+            2
+
+        clamped =
+            digestLength - progress |> clamp softener (softener * maxBulgeLength)
+    in
+    clamped // softener
 
 
 getStyleClass : Int -> String -> Metabolism -> String
 getStyleClass index baseClass metabolism =
     -- Needs corresponding css classes (bulge-n, clockwise, counter-clockwise).
     let
+        bulgeLevel =
+            index + 1 + maxBulgeLength - getBulgeLength metabolism
+
         bulgeClass =
-            "bulge-" ++ (index + 1 |> String.fromInt)
+            "bulge-" ++ String.fromInt bulgeLevel
 
         rotationClass =
             if getRotationForIndex index metabolism == Clockwise then
@@ -82,7 +92,7 @@ getStyleClass index baseClass metabolism =
             else
                 "counter-clockwise"
     in
-    if index < maxBuglgeLength then
+    if index < maxBulgeLength then
         String.join " " [ baseClass, bulgeClass, rotationClass ]
 
     else
