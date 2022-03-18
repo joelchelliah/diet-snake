@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Browser.Events exposing (onKeyDown)
+import Browser.Events exposing (onAnimationFrameDelta, onKeyDown)
 import Components.Hud as Hud
 import Components.Snake as Snake
 import Components.Stats as Stats
@@ -11,7 +11,6 @@ import Html.Attributes exposing (class)
 import Json.Decode as Decode
 import Message exposing (getNewPillAndTrimCommand, keyToMessage)
 import Model exposing (Direction(..), GameState(..), Model, Msg(..), StatDetails, Tile(..), config)
-import Time
 import Utils.Icon exposing (CornerIcon(..), iconCss)
 
 
@@ -22,13 +21,17 @@ init bestStats () =
       , state = Init
       , map = Tiles.init config.gameWidth config.gameHeight
       , stats = Stats.init bestStats
+      , frameDeltas =
+            { tickDelta = 0
+            , growDelta = 0
+            }
       }
     , Cmd.none
     )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg ({ snake, state, pill, map, stats } as model) =
+update msg ({ snake, state, pill, map, stats, frameDeltas } as model) =
     if List.member state [ Init, Paused, GameOver ] && msg /= Enter then
         ( model, Cmd.none )
 
@@ -88,6 +91,28 @@ update msg ({ snake, state, pill, map, stats } as model) =
                 , Cmd.none
                 )
 
+            FrameDelta delta ->
+                let
+                    newGrowDelta =
+                        frameDeltas.growDelta + delta
+
+                    newTickDelta =
+                        frameDeltas.tickDelta + delta
+
+                    updateDeltas grow tick =
+                        { frameDeltas | growDelta = grow, tickDelta = tick }
+                in
+                if newGrowDelta >= config.growthRate then
+                    update Grow
+                        { model | frameDeltas = updateDeltas 0 newTickDelta }
+
+                else if newTickDelta >= config.gameSpeed then
+                    update Tick
+                        { model | frameDeltas = updateDeltas newGrowDelta 0 }
+
+                else
+                    ( { model | frameDeltas = updateDeltas newGrowDelta newTickDelta }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -110,8 +135,7 @@ subscriptions model =
     case model.state of
         Running ->
             Sub.batch
-                [ Time.every config.gameSpeed (\_ -> Tick)
-                , Time.every config.growthRate (\_ -> Grow)
+                [ onAnimationFrameDelta FrameDelta
                 , keyDownSubscription
                 ]
 

@@ -21,6 +21,14 @@ type alias Model =
     , state : GameState
     , map : Map
     , stats : Stats
+    , frameDeltas : FrameDeltaCounters
+    }
+
+
+type alias FrameDeltaCounters =
+    -- To calculate correct time intervals according to browser's render loop
+    { tickDelta : Float
+    , growDelta : Float
     }
 
 
@@ -102,12 +110,13 @@ type Msg
     | Grow
     | NewPill Pill
     | Trim Int
+    | FrameDelta Float
 
 
 config =
     { gameWidth = 32
     , gameHeight = 24
-    , gameSpeed = 90 -- Lower number -> faster
-    , growthStartAt = 10 -- Number of steps
-    , growthRate = 180 -- Number of milliseconds between
+    , gameSpeed = 90 -- Number of milliseconds between each Tick
+    , growthStartAt = 10 -- Number of steps before growth can start
+    , growthRate = 180 -- Number of milliseconds between each growth spurt
     }
