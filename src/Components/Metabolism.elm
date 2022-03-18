@@ -75,8 +75,24 @@ getBulgeLength { progress } =
     clamped // softener
 
 
-getStyleClass : Int -> String -> Metabolism -> String
-getStyleClass index baseClass metabolism =
+getHeadBulgeClass : String -> Metabolism -> String
+getHeadBulgeClass baseClass { isActive, progress, rate } =
+    let
+        isAtStep step =
+            isActive && progress < step * rate
+    in
+    if isAtStep 2 then
+        baseClass ++ " bulge-1"
+
+    else if isAtStep 3 then
+        baseClass ++ " bulge-2"
+
+    else
+        baseClass
+
+
+getTailBulgeClass : Int -> String -> Metabolism -> String
+getTailBulgeClass index baseClass metabolism =
     -- Needs corresponding css classes (bulge-n, clockwise, counter-clockwise).
     let
         bulgeLevel =
@@ -97,12 +113,6 @@ getStyleClass index baseClass metabolism =
 
     else
         baseClass
-
-
-isAtDigestingStep : Int -> Metabolism -> Bool
-isAtDigestingStep step { isActive, progress, rate } =
-    -- For snake head animation
-    isActive && progress < step * rate
 
 
 init : Metabolism

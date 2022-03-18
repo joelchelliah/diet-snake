@@ -33,17 +33,46 @@ makeTile tileContainer tileClass =
             tileContainer [ class ("tile " ++ name) ] [] |> wrapInBackgroundTile
 
 
-makePillTile : Model.PillColor -> Float -> Html msg
-makePillTile color rotation =
+placeWallTile : Html msg
+placeWallTile =
+    Tile "wall" |> makeTile div
+
+
+placeEmptyTile : Html msg
+placeEmptyTile =
+    makeTile span EmptyTile
+
+
+placeHeadTile : Snake -> Html msg
+placeHeadTile { metabolism } =
+    Tile
+        (Metabolism.getHeadBulgeClass "snake head" metabolism)
+        |> makeTile div
+
+
+placeTailTile : Snake -> Position -> Html a
+placeTailTile snake currentTilePosition =
     let
-        pillColor =
-            Pill.toString color
+        baseClass =
+            "snake tail"
+
+        digestingPositions =
+            Snake.getCurrentlyDigestingTailPortion snake
+
+        index =
+            getIndexInListOrDefault currentTilePosition 1337 digestingPositions
     in
-    Tile ("pill " ++ pillColor) |> makeTile (pulseAndTurn rotation)
+    if index /= 1337 then
+        Tile
+            (Metabolism.getTailBulgeClass index baseClass snake.metabolism)
+            |> makeTile div
+
+    else
+        Tile baseClass |> makeTile div
 
 
-makeDeadTile : List Position -> Position -> Html msg
-makeDeadTile tilePositions currentTilePosition =
+placeDeadTile : List Position -> Position -> Html msg
+placeDeadTile tilePositions currentTilePosition =
     -- The currentTilePosition is only used to offset the fade animation delay
     let
         fadeAwayContainer =
@@ -52,69 +81,32 @@ makeDeadTile tilePositions currentTilePosition =
     Tile "snake dead" |> makeTile fadeAwayContainer
 
 
-makeHeadTile : Snake -> Html msg
-makeHeadTile { metabolism } =
-    if Metabolism.isAtDigestingStep 2 metabolism then
-        Tile "snake head bulge-1" |> makeTile div
-
-    else if Metabolism.isAtDigestingStep 3 metabolism then
-        Tile "snake head bulge-2" |> makeTile div
-
-    else
-        Tile "snake head" |> makeTile div
-
-
-makeTailDigestTile : Snake -> Int -> Html msg
-makeTailDigestTile { metabolism } index =
-    Tile
-        (Metabolism.getStyleClass index "snake tail" metabolism)
-        |> makeTile div
-
-
-placeTile =
-    { head = makeHeadTile
-    , tail = Tile "snake tail" |> makeTile div
-    , wall = Tile "wall" |> makeTile div
-    , tailDigest = makeTailDigestTile
-    , dead = makeDeadTile
-    , pill = makePillTile
-    , empty = makeTile span EmptyTile
-    }
-
-
-placeTailTile : Snake -> Position -> Html a
-placeTailTile snake currentTilePosition =
+placePillTile : Model.PillColor -> Float -> Html msg
+placePillTile color rotation =
     let
-        digestingPositions =
-            Snake.getCurrentlyDigestingTailPortion snake
-
-        index =
-            getIndexInListOrDefault currentTilePosition 1337 digestingPositions
+        pillColor =
+            Pill.toString color
     in
-    if index /= 1337 then
-        placeTile.tailDigest snake index
-
-    else
-        placeTile.tail
+    Tile ("pill " ++ pillColor) |> makeTile (pulseAndTurn rotation)
 
 
 viewTile : Snake -> Maybe Pill -> Bool -> Tile -> Html Msg
 viewTile snake pill isGameOver tile =
     case tile of
         Wall ->
-            placeTile.wall
+            placeWallTile
 
         Open pos ->
             if snake.head == pos then
                 if isGameOver then
-                    placeTile.dead [ pos ] pos
+                    placeDeadTile [ pos ] pos
 
                 else
-                    placeTile.head snake
+                    placeHeadTile snake
 
             else if Snake.isTailHere snake pos then
                 if isGameOver then
-                    placeTile.dead snake.tail pos
+                    placeDeadTile snake.tail pos
 
                 else
                     placeTailTile snake pos
@@ -125,13 +117,13 @@ viewTile snake pill isGameOver tile =
                         span [] []
 
                     Just { color, rotation } ->
-                        placeTile.pill color rotation
+                        placePillTile color rotation
 
             else if Snake.isTrimmedTailHere snake pos then
-                placeTile.dead snake.trimmed pos
+                placeDeadTile snake.trimmed pos
 
             else
-                placeTile.empty
+                placeEmptyTile
 
 
 init : Int -> Int -> Map
