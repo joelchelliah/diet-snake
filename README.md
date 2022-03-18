@@ -11,8 +11,7 @@ Help him lose weight by guiding him towards his **diet pills**, keep him safe fr
 💊 [Start his diet now!](https://diet-snake.netlify.app/)
 
 
----
-Gameplay:
+## Gameplay
 
 ![gameplay gif of the hungry snake](/public/gameplay.gif)
 
