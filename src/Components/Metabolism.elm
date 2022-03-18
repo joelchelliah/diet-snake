@@ -77,6 +77,7 @@ getBulgeLength { progress } =
 
 getHeadBulgeClass : String -> Metabolism -> String
 getHeadBulgeClass baseClass { isActive, progress, rate } =
+    -- Needs corresponding css classes for bulge-n
     let
         isAtStep step =
             isActive && progress < step * rate

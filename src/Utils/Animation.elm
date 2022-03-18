@@ -15,7 +15,7 @@ fadeAway index =
 
         fade =
             Animation.fromTo
-                { duration = 800, options = [ Animation.delay delayInMillis ] }
+                { duration = 1000, options = [ Animation.delay delayInMillis ] }
                 [ P.rotate 0, P.opacity 1, P.scale 1 ]
                 [ P.rotate 180, P.opacity 0, P.scale 0 ]
     in
