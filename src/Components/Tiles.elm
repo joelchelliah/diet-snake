@@ -1,10 +1,11 @@
 module Components.Tiles exposing (init, view)
 
+import Components.Metabolism as Metabolism
 import Components.Pill as Pill
 import Components.Snake as Snake
 import Html exposing (Attribute, Html, div, span)
 import Html.Attributes exposing (class)
-import Model exposing (GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..), config)
+import Model exposing (BulgeRotation(..), GameState(..), Map, Model, Msg, Pill, Position, Snake, Tile(..), config)
 import Utils.Animation exposing (fadeAway, pulseAndTurn)
 import Utils.List exposing (getIndexInListOrDefault)
 
@@ -52,11 +53,11 @@ makeDeadTile tilePositions currentTilePosition =
 
 
 makeHeadTile : Snake -> Html msg
-makeHeadTile snake =
-    if Snake.isAtDigestingStep 2 snake then
+makeHeadTile { metabolism } =
+    if Metabolism.isAtDigestingStep 2 metabolism then
         Tile "snake head bulge-1" |> makeTile div
 
-    else if Snake.isAtDigestingStep 3 snake then
+    else if Metabolism.isAtDigestingStep 3 metabolism then
         Tile "snake head bulge-2" |> makeTile div
 
     else
@@ -64,19 +65,10 @@ makeHeadTile snake =
 
 
 makeTailDigestTile : Snake -> Int -> Html msg
-makeTailDigestTile snake index =
-    let
-        suffix =
-            index + 1 |> String.fromInt
-
-        validSuffixes =
-            Snake.getDigestBulgeLength snake |> List.range 1 |> List.map String.fromInt
-    in
-    if List.member suffix validSuffixes then
-        Tile ("snake digest bulge-" ++ suffix) |> makeTile div
-
-    else
-        Tile "snake digest" |> makeTile div
+makeTailDigestTile { metabolism } index =
+    Tile
+        (Metabolism.getStyleClass index "snake tail" metabolism)
+        |> makeTile div
 
 
 placeTile =
@@ -95,10 +87,12 @@ placeTailTile snake currentTilePosition =
     let
         digestingPositions =
             Snake.getCurrentlyDigestingTailPortion snake
+
+        index =
+            getIndexInListOrDefault currentTilePosition 1337 digestingPositions
     in
-    if List.member currentTilePosition digestingPositions then
-        getIndexInListOrDefault currentTilePosition 1337 digestingPositions
-            |> placeTile.tailDigest snake
+    if index /= 1337 then
+        placeTile.tailDigest snake index
 
     else
         placeTile.tail

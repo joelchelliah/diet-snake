@@ -1,19 +1,8 @@
 module Components.Snake exposing (..)
 
+import Components.Metabolism as Metabolism
 import Model exposing (Direction(..), Map, Pill, Position, Snake, config)
 import Utils.Position exposing (getFreeTilePositions)
-
-
-disabledDigestingProgress : number
-disabledDigestingProgress =
-    -- Disables digesting state without requiring an extra field
-    -1
-
-
-getDigestBulgeLength : Snake -> Int
-getDigestBulgeLength snake =
-    -- To slowly reduce bulge when nearing end of progress
-    config.digestLength - snake.digestingProgress |> clamp 1 5
 
 
 validateDirection : Direction -> Direction -> Direction
@@ -86,15 +75,8 @@ turn newDirection snake =
 
 
 digest : Bool -> Snake -> Snake
-digest onPill ({ digestingProgress } as snake) =
-    if onPill then
-        { snake | digestingProgress = 0 }
-
-    else if isDigesting snake then
-        { snake | digestingProgress = digestingProgress + config.digestRate }
-
-    else
-        { snake | digestingProgress = disabledDigestingProgress }
+digest onPill ({ metabolism } as snake) =
+    { snake | metabolism = Metabolism.digest onPill metabolism }
 
 
 trim : Snake -> Int -> Snake
@@ -170,24 +152,14 @@ isOnPill pill { head, tail } =
             List.any (\pos -> pos == position) (head :: tail)
 
 
-isDigesting : Snake -> Bool
-isDigesting { digestingProgress } =
-    digestingProgress >= 0 && digestingProgress <= config.digestLength
-
-
-isAtDigestingStep : Int -> Snake -> Bool
-isAtDigestingStep step snake =
-    isDigesting snake && snake.digestingProgress < step * config.digestRate
-
-
 getCurrentlyDigestingTailPortion : Snake -> List Position
-getCurrentlyDigestingTailPortion ({ tail, digestingProgress } as snake) =
+getCurrentlyDigestingTailPortion { tail, metabolism } =
     let
-        bulge =
-            getDigestBulgeLength snake
+        bulgeLength =
+            Metabolism.getBulgeLength metabolism
     in
-    if isDigesting snake then
-        List.drop digestingProgress tail |> List.take bulge
+    if metabolism.isActive then
+        List.drop metabolism.progress tail |> List.take bulgeLength |> List.reverse
 
     else
         []
@@ -212,5 +184,5 @@ init tailLength =
     , direction = Up
     , isGrowing = False
     , canGrow = False
-    , digestingProgress = disabledDigestingProgress
+    , metabolism = Metabolism.init
     }

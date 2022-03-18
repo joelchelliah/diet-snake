@@ -35,8 +35,21 @@ type alias Snake =
     , direction : Direction
     , isGrowing : Bool
     , canGrow : Bool -- To prevent snake from growing immediately
-    , digestingProgress : Int -- Index of first digesting tile
+    , metabolism : Metabolism
     }
+
+
+type alias Metabolism =
+    { progress : Int -- Index of the first bulging tile
+    , bulgeRotation : BulgeRotation -- Rotate bulge left or right for CSS animation
+    , isActive : Bool
+    , rate : Int
+    }
+
+
+type BulgeRotation
+    = Clockwise
+    | CounterClockwise
 
 
 type alias Pill =
@@ -97,6 +110,4 @@ config =
     , gameSpeed = 90 -- Lower number -> faster
     , growthStartAt = 10 -- Number of steps
     , growthRate = 180 -- Number of milliseconds between
-    , digestRate = 2 -- Number of tail tiles to step through each Tick
-    , digestLength = 20 -- Number of tiles to show digesting
     }
